@@ -31,7 +31,6 @@ npm run dev
 | `src/content/troubleshooting/` | `/troubleshooting/<slug>/` | 故障排查 |
 | `src/content/protocols/` | `/protocols/<slug>/` | 线路与协议知识 |
 | `src/content/scenarios/` | `/scenarios/<slug>/` | 使用场景 |
-| `src/content/reviews/` | `/reviews/<slug>/` | 服务评测 |
 | `src/content/comparisons/` | `/compare/<slug>/` | 服务对比 |
 | `src/content/providers/` | `/directory/<slug>/` | 服务档案 |
 | `src/content/glossary/` | `/glossary/<slug>/` | 术语表 |
@@ -53,7 +52,7 @@ npm run dev
 npm run validate
 ```
 
-它依次执行:类型与内容 Schema 检查 → 构建 → 内部链接检查 → SEO 检查 → 内容字段检查。任何一步失败都会中断并返回非零退出码。
+它依次执行:类型与内容 Schema 检查 → 构建 → 内部链接检查 → SEO 检查 → 内容字段检查 → SEO/GEO 覆盖率审计。任何一步失败都会中断并返回非零退出码。
 
 单独运行某一项:
 
@@ -62,6 +61,7 @@ npm run check
 npm run audit:links
 npm run audit:seo
 npm run audit:content
+npm run audit:geo
 ```
 
 ## 5. 在 Cloudflare Pages 创建项目
@@ -82,7 +82,7 @@ npm run audit:content
 
 构建命令中已经包含 Pagefind 索引生成和 sitemap 裁剪,不需要额外配置构建步骤。
 
-如果需要 IndexNow 密钥,在 Pages 项目的 **Settings** → **Environment variables** 中添加 `INDEXNOW_KEY`。不要把密钥写进仓库。
+IndexNow 密钥在 Pages 项目的 **Settings** → **Environment variables** 中添加 `INDEXNOW_KEY`。该密钥按协议设计即为公开,验证文件需随仓库发布,详见第 13 节。
 
 ## 7. 绑定自定义域名
 
@@ -181,7 +181,84 @@ node scripts/indexnow.mjs --dry-run
 
 注意:IndexNow 只是通知机制,不保证收录,也不影响排名。频繁重复提交没有意义,建议在有实质内容更新后再调用。
 
-## 14. 部署后检查
+## 14. robots.txt 与 AI 爬虫策略(重要)
+
+### Cloudflare 会覆盖你的 robots.txt
+
+仓库里的 `public/robots.txt` **不是线上最终生效的版本**。Cloudflare 会在其前面注入一段托管内容,标记为
+`# BEGIN Cloudflare Managed content` 到 `# END Cloudflare Managed Content`。
+
+默认注入的内容会拦截 AI 爬虫:
+
+```
+User-agent: *
+Content-Signal: search=yes,ai-train=no,use=reference
+
+User-agent: GPTBot          Disallow: /
+User-agent: ClaudeBot       Disallow: /
+User-agent: Google-Extended Disallow: /
+User-agent: Bytespider      Disallow: /
+User-agent: CCBot           Disallow: /
+（以及 Amazonbot、Applebot-Extended、meta-externalagent 等）
+```
+
+### 本站的决定:关闭该拦截
+
+**已决定关闭 Cloudflare 的 AI 爬虫拦截。** 理由记录如下,以免日后有人看到 robots.txt 里
+没有 AI 拦截,误以为是配置遗漏又加回去。
+
+**1. 它挡不住真正需要担心的事。**
+`Google-Extended` 控制的是 Gemini 与 Vertex AI 的接地和训练,**不影响 Google AI 概览**
+—— AI 概览走的是普通 Googlebot。开着这个拦截的实际效果是:内容照样被 AI 概览摘要,
+而 Gemini 里的引用位却主动放弃了。属于纯亏。
+
+同理,名单里拦的 `GPTBot` 是 OpenAI 的训练爬虫,ChatGPT 搜索引用走的是另一个 UA,
+不在该名单内。
+
+**2. 本站的内容结构是为 GEO 建的。**
+522 条 FAQ、75% 页面带直接答案区块、DefinedTerm 结构化数据、可提取的表格与有序步骤
+—— 这些投入只有在 AI 爬得到时才有回报。
+
+**3. 第一方实测数据是本站最可能被引用的资产。**
+九家服务在同一工具、同一网络下的测速结果,是其他站点无法复制的数据。
+
+**4. 对本站的商业模式,被引用优于不出现。**
+「品牌名怎么样」这类查询是商业意图,用户看到 AI 给出的实测数字后,仍需到站上看套餐、
+优惠码与注册入口。真正会被 AI 消化掉的是纯信息型查询(如「IEPL 是什么意思」),
+而那类页面本就不是转化页。
+
+### 关闭位置
+
+Cloudflare 控制台 → 对应域名 → **安全性 → 机器人(Bot)** → 找 **AI 抓取工具控制 /
+AI Crawl Control**(不同账户界面措辞可能不同,也可能叫「管理 robots.txt」),
+关闭 AI 爬虫拦截或托管 robots.txt。
+
+### 关闭后如何验证
+
+```bash
+curl -s https://vpntuijian.cc/robots.txt
+```
+
+**正确的结果**应该只剩本站自己的内容,不含 `Cloudflare Managed content` 区块:
+
+```
+User-agent: *
+Allow: /
+Disallow: /search/
+
+Sitemap: https://vpntuijian.cc/sitemap-index.xml
+```
+
+判断标准:输出里**不应出现** `GPTBot`、`ClaudeBot`、`Google-Extended`、`Content-Signal`
+这些字样。只要还能搜到它们,说明拦截仍然生效。
+
+### 需要留意的不确定性
+
+各家 AI 爬虫的 UA 名称、以及每个名称实际控制什么,这几年一直在变。上面的判断基于当前
+普遍情况。关闭后建议过一到两周在 Search Console 的抓取统计里对比一下实际变化,
+不要假设配置改了效果就一定符合预期。
+
+## 15. 部署后检查
 
 每次上线后过一遍:
 
@@ -195,7 +272,7 @@ node scripts/indexnow.mjs --dry-run
 - [ ] 浏览器控制台无报错
 - [ ] 检查响应头中 `X-Content-Type-Options`、`Referrer-Policy` 已生效
 
-## 15. 常见构建问题
+## 16. 常见构建问题
 
 **`Duplicate id "xxx" found` 告警。** 在已有内容缓存的情况下一次性新增较多 Markdown 文件时,glob loader 可能重复加载条目。这不是文件重复(可以用下面的命令确认没有重名文件),而是内容层缓存陈旧:
 
@@ -213,7 +290,7 @@ rm -rf .astro node_modules/.astro dist && npm run build
 
 **Pagefind 建议改用 Component UI。** 当前使用的 Default UI 仍受支持,不需要处理。
 
-## 16. 回滚方法
+## 17. 回滚方法
 
 Cloudflare Pages 保留历史部署记录。
 
