@@ -202,61 +202,70 @@ User-agent: CCBot           Disallow: /
 （以及 Amazonbot、Applebot-Extended、meta-externalagent 等）
 ```
 
-### 本站的决定:关闭该拦截
+### 本站的当前状态:保留托管拦截,但放行 AI 搜索类爬虫
 
-**已决定关闭 Cloudflare 的 AI 爬虫拦截。** 理由记录如下,以免日后有人看到 robots.txt 里
-没有 AI 拦截,误以为是配置遗漏又加回去。
+**决定于 2026-08-06,保持 Cloudflare 托管 robots.txt 开启。** 具体状态如下,
+日后调整前请先读完「已知代价」一节,不要凭直觉改。
 
-**1. 它挡不住真正需要担心的事。**
-`Google-Extended` 控制的是 Gemini 与 Vertex AI 的接地和训练,**不影响 Google AI 概览**
-—— AI 概览走的是普通 Googlebot。开着这个拦截的实际效果是:内容照样被 AI 概览摘要,
-而 Gemini 里的引用位却主动放弃了。属于纯亏。
+**已放行(GEO 引用的实际通道):**
 
-同理,名单里拦的 `GPTBot` 是 OpenAI 的训练爬虫,ChatGPT 搜索引用走的是另一个 UA,
-不在该名单内。
+| 爬虫 | 类别 | 作用 |
+| --- | --- | --- |
+| Googlebot、必应机器人、百度 | 搜索引擎 | 传统 SEO |
+| 克劳德搜索机器人 | 人工智能搜索 | Claude 引用 |
+| OAI 搜索机器人 | 人工智能搜索 | ChatGPT 搜索引用 |
+| PerplexityBot | 人工智能搜索 | Perplexity 引用 |
+| ChatGPT 用户、Perplexity-User、MistralAI-User、Meta-ExternalFetcher、Manus Bot | AI 助手 | 用户主动让 AI 打开页面 |
+| 苹果机器人 | 人工智能搜索 | Apple 智能 |
 
-**2. 本站的内容结构是为 GEO 建的。**
-522 条 FAQ、75% 页面带直接答案区块、DefinedTerm 结构化数据、可提取的表格与有序步骤
-—— 这些投入只有在 AI 爬得到时才有回报。
+**已拦截(训练与采集类):**
 
-**3. 第一方实测数据是本站最可能被引用的资产。**
-九家服务在同一工具、同一网络下的测速结果,是其他站点无法复制的数据。
+Amazonbot、Applebot-Extended、Bytespider、CCBot、ClaudeBot、GPTBot、
+meta-externalagent、Google-Extended、Google-CloudVertexBot、FacebookBot、
+PetalBot、TikTok Spider 等。
 
-**4. 对本站的商业模式,被引用优于不出现。**
-「品牌名怎么样」这类查询是商业意图,用户看到 AI 给出的实测数字后,仍需到站上看套餐、
-优惠码与注册入口。真正会被 AI 消化掉的是纯信息型查询(如「IEPL 是什么意思」),
-而那类页面本就不是转化页。
+robots.txt 中同时声明 —— 允许索引与引用,不允许用于训练。该信号目前只是声明,没有技术强制力。
 
-### 关闭位置
+### 已知代价
 
-Cloudflare 控制台 → 对应域名 → **安全性 → 机器人(Bot)** → 找 **AI 抓取工具控制 /
-AI Crawl Control**(不同账户界面措辞可能不同,也可能叫「管理 robots.txt」),
-关闭 AI 爬虫拦截或托管 robots.txt。
+保留当前配置意味着放弃两项:
+
+**1. Gemini 与 Vertex AI 的引用位。**
+robots.txt 中的 `Google-Extended: Disallow: /` 会阻止 Google 把内容用于 Gemini 接地。
+需要注意的是它**不影响 Google AI 概览** —— AI 概览走普通 Googlebot。
+所以实际效果是:内容照样被 AI 概览摘要,但 Gemini 里不会引用本站。
+
+**2. 部分 AI 助手的完整覆盖。**
+ClaudeBot、GPTBot 被拦,不过它们对应的引用通道(克劳德搜索机器人、
+OAI 搜索机器人)已放行,影响有限。
+
+这个取舍对本站的实际损失集中在 Gemini 一侧。考虑到本站为 GEO 做了大量结构化投入
+(522 条 FAQ、直接答案区块、DefinedTerm、九家第一方实测数据),这部分能力目前
+没有完全释放。
+
+### 想改的话怎么改
+
+**`Google-Extended` 不是真实爬虫**,不会出现在 AI 爬行控制的爬虫列表里 —— Google 没有任何
+机器人以这个身份发起请求,它只是一个写在 robots.txt 里的标记,用来声明「Googlebot 已抓取的
+内容能否用于 Gemini 与 Vertex AI」。因此:
+
+- 想放开它,必须关闭 **托管 robots.txt**(AI 爬行控制页面顶部的 robots.txt 管理区块)。
+  在爬虫列表里逐条翻找是找不到的,这一点已经确认过。
+- `Google-CloudVertexBot` 则是真实爬虫,可以在爬虫列表中单独放行。
 
 ### 关闭后如何验证
 
 ```bash
-curl -s https://vpntuijian.cc/robots.txt
+curl -s https://vpntuijian.cc/robots.txt | grep -iE "Google-Extended|GPTBot|ClaudeBot|Content-Signal"
 ```
 
-**正确的结果**应该只剩本站自己的内容,不含 `Cloudflare Managed content` 区块:
-
-```
-User-agent: *
-Allow: /
-Disallow: /search/
-
-Sitemap: https://vpntuijian.cc/sitemap-index.xml
-```
-
-判断标准:输出里**不应出现** `GPTBot`、`ClaudeBot`、`Google-Extended`、`Content-Signal`
-这些字样。只要还能搜到它们,说明拦截仍然生效。
+无输出即表示托管块已移除。有输出则说明仍然生效。
 
 ### 需要留意的不确定性
 
-各家 AI 爬虫的 UA 名称、以及每个名称实际控制什么,这几年一直在变。上面的判断基于当前
-普遍情况。关闭后建议过一到两周在 Search Console 的抓取统计里对比一下实际变化,
-不要假设配置改了效果就一定符合预期。
+各家 AI 爬虫的 UA 名称、以及每个名称实际控制什么,这几年一直在变。上述判断基于
+2026-08 的普遍情况。调整后建议过一到两周在 Search Console 的抓取统计中复核实际变化,
+不要假设改了配置效果就一定符合预期。
 
 ## 15. 部署后检查
 
