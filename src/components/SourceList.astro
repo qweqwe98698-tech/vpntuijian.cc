@@ -1,0 +1,36 @@
+---
+/** 参考来源列表 */
+interface Props {
+  sources: { title: string; url?: string | undefined; note?: string | undefined }[];
+}
+
+const { sources } = Astro.props;
+---
+
+{sources.length > 0 && (
+  <section class="source-list" aria-label="参考来源">
+    <h2>参考来源</h2>
+    <ul>
+      {sources.map((s) => (
+        <li>
+          {s.url ? (
+            <a href={s.url} rel="nofollow noopener" target="_blank">{s.title}</a>
+          ) : (
+            <span>{s.title}</span>
+          )}
+          {s.note && <span class="source-note">({s.note})</span>}
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .source-list {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .source-note {
+    margin-left: var(--space-1);
+  }
+</style>

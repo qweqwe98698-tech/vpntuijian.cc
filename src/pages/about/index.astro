@@ -1,0 +1,50 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import { SITE } from '@lib/site';
+import { organizationSchema } from '@lib/schema';
+---
+
+<SectionLayout
+  title="关于本站：VPN推荐指南是什么"
+  description="本站是面向中文用户的网络代理服务知识平台,提供选购判断标准、九家服务的第一方实测档案、八个客户端的配置教程和十六类故障的排查流程。了解我们的定位、数据原则与局限。"
+  path="/about/"
+  h1="关于本站"
+  lead={SITE.tagline}
+  isCollection={false}
+  extraJsonLd={[organizationSchema()]}
+>
+  <div class="prose section">
+    <h2>我们做什么</h2>
+    <p>
+      VPN推荐指南(英文识别名 VPN Tuijian
+      Guide)是一个面向中文网络代理服务用户的知识平台。我们围绕三个问题组织内容:<strong>应该怎么选</strong>、<strong>应该怎么配置和使用</strong>、<strong>出现问题后应该怎么排查</strong>。
+    </p>
+    <p>内容建设围绕四个动作展开:</p>
+    <ul>
+      <li><strong>选</strong>——按预算、设备和使用场景提供<a href="/choose/">选择参考</a>;</li>
+      <li><strong>测</strong>——用统一模板整理<a href="/directory/">服务档案</a>,标注数据状态与核验日期;</li>
+      <li><strong>用</strong>——提供<a href="/clients/">客户端与订阅配置教程</a>;</li>
+      <li><strong>修</strong>——按具体故障现象提供<a href="/troubleshooting/">排查流程</a>。</li>
+    </ul>
+
+    <h2>我们不做什么</h2>
+    <ul>
+      <li>不做只有注册按钮的推广落地页;</li>
+      <li>不做常年不变、只换链接的排行榜;</li>
+      <li>不使用「永远稳定」「100% 解锁」这类绝对承诺;</li>
+      <li>不把示例数据伪装成真实测试结果;</li>
+      <li>不虚构用户评价和评分。</li>
+    </ul>
+
+    <h2>内容如何保持可信</h2>
+    <p>
+      全站数据采用统一的状态标识(已核实 / 参考信息 / 示例展示 / 等待更新 /
+      需重新核验),核验方式见<a href="/methodology/">测试方法</a>,写作与审核规则见<a href="/editorial-policy/">编辑规范</a>,商业关系处理见<a href="/disclosure/">推广披露</a>。
+    </p>
+
+    <h2>重要提醒</h2>
+    <p>
+      本站内容用于教育与参考,不构成对任何服务的担保。使用网络代理服务前,请了解并遵守你所在地区的法律法规。有任何反馈,欢迎通过<a href="/contact/">联系方式</a>告诉我们。
+    </p>
+  </div>
+</SectionLayout>

@@ -1,0 +1,114 @@
+---
+/**
+ * 选购专题导航:按关键词优先级分组展示 /airport/* 专题页。
+ * 这是机场推荐 Hub 到各 Spoke 的主要内链层。
+ */
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entries: CollectionEntry<'picks'>[];
+  title?: string;
+  lead?: string;
+  alt?: boolean;
+  /** 已在 container 内使用时设为 true,避免嵌套两层容器 */
+  bare?: boolean;
+}
+
+const {
+  entries,
+  title = '按需求找机场',
+  lead = '每个专题只回答一类问题:这类需求该看什么、怎么自己验证、常见的坑在哪。',
+  alt = false,
+  bare = false,
+} = Astro.props;
+
+/** 专题分组:与 docs/keyword-matrix.md 的优先级层级对应 */
+const groupDefs: { name: string; slugs: string[] }[] = [
+  { name: '按客户端', slugs: ['clash', 'shadowrocket', 'v2rayn', 'android'] },
+  { name: '按使用场景', slugs: ['chatgpt', 'streaming', 'netflix', 'tiktok', 'low-latency'] },
+  { name: '按线路与 IP', slugs: ['dedicated-line', 'native-ip'] },
+  { name: '按价格与套餐', slugs: ['cost-performance', 'pay-as-you-go', 'free-trial', 'coupon'] },
+  { name: '选购参考', slugs: ['ranking'] },
+];
+
+const byId = new Map(entries.map((e) => [e.id, e]));
+const groups = groupDefs
+  .map((g) => ({
+    name: g.name,
+    items: g.slugs.map((s) => byId.get(s)).filter((e): e is CollectionEntry<'picks'> => Boolean(e)),
+  }))
+  .filter((g) => g.items.length > 0);
+---
+
+{groups.length > 0 && (
+  <section class={`section ${alt ? 'section-alt' : ''}`} aria-labelledby="picks-title">
+    <div class={bare ? '' : 'container'}>
+      <h2 class="section-title" id="picks-title">{title}</h2>
+      <p class="section-lead">{lead}</p>
+      {groups.map((g) => (
+        <div class="picks-group">
+          <h3 class="picks-group-title">{g.name}</h3>
+          <ul class="picks-list">
+            {g.items.map((e) => (
+              <li>
+                <a href={`/airport/${e.id}/`}>
+                  <span class="pick-name">{e.data.primaryKeyword}</span>
+                  <span class="pick-desc">{e.data.description}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .picks-group {
+    margin-bottom: var(--space-5);
+  }
+  .picks-group-title {
+    font-size: var(--text-base);
+    color: var(--color-muted);
+    font-weight: 600;
+    margin: 0 0 var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .picks-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-3);
+  }
+  .picks-list a {
+    display: block;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    height: 100%;
+  }
+  .picks-list a:hover {
+    border-color: var(--color-brand);
+    text-decoration: none;
+    box-shadow: var(--shadow);
+  }
+  .pick-name {
+    display: block;
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-bottom: var(--space-1);
+  }
+  .picks-list a:hover .pick-name {
+    color: var(--color-brand);
+  }
+  .pick-desc {
+    display: block;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    line-height: var(--leading-normal);
+  }
+</style>

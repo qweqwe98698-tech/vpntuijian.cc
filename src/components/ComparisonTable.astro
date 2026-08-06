@@ -1,0 +1,32 @@
+---
+/** 对比表:第一列为维度,后续列为对比对象 */
+import ResponsiveTable from './ResponsiveTable.astro';
+
+interface Props {
+  caption: string;
+  subjects: string[];
+  rows: { dimension: string; values: string[] }[];
+}
+
+const { caption, subjects, rows } = Astro.props;
+---
+
+<ResponsiveTable label={caption}>
+  <table>
+    <caption class="sr-only">{caption}</caption>
+    <thead>
+      <tr>
+        <th scope="col">对比维度</th>
+        {subjects.map((s) => <th scope="col">{s}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <th scope="row">{row.dimension}</th>
+          {row.values.map((v) => <td>{v}</td>)}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</ResponsiveTable>

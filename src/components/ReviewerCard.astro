@@ -1,0 +1,15 @@
+---
+/** 审核者信息卡片(复用 AuthorCard 样式语义,标题不同) */
+import AuthorCard from './AuthorCard.astro';
+
+interface Props {
+  name: string;
+  role: string;
+  bio: string;
+  expertise?: string[];
+}
+
+const props = Astro.props;
+---
+
+<AuthorCard {...props} heading="内容审核" />

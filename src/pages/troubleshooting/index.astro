@@ -1,0 +1,102 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import StepList from '@components/StepList.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const entries = await getPublished('troubleshooting');
+const cards = entries.map(toCard);
+const featured = cards.filter((c) => c.featured);
+const rest = cards.filter((c) => !c.featured);
+
+const faq = [
+  {
+    q: '排查连接问题应该从哪一步开始?',
+    a: '先确认设备本身能正常上网(关掉代理试试打开普通网页),再检查系统时间是否准确,然后依次检查客户端状态、订阅是否过期、节点是否可用。大多数问题出在订阅过期和节点故障这两层,不需要一开始就重装软件。',
+  },
+  {
+    q: '所有教程都试过了还是连不上怎么办?',
+    a: '收集三样信息再去找服务商客服:客户端和版本号、出问题的具体时间和网络环境(Wi-Fi 还是流量)、客户端日志里的报错关键字。带着这些信息提问,处理速度会快很多。',
+  },
+  {
+    q: '为什么同一个节点昨天能用今天不能用?',
+    a: '节点可用性本来就是动态的:服务商会调整服务器、线路可能临时故障、高峰期也可能拥堵。先切换到其他节点确认是单个节点问题还是整体问题,再按对应的排查文章处理。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(cards.map((c) => ({ name: c.title, url: c.href }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="节点故障排查中心：按现象解决连接问题"
+  description="按现象查找解决方案:所有节点超时、订阅无法更新、连接成功但无法上网、晚高峰变慢等常见问题的完整排查流程,覆盖 Windows、macOS、Android 和 iOS。"
+  path="/troubleshooting/"
+  h1="故障排查中心"
+  lead="连接问题几乎都有固定的检查路径。这里按「你看到的现象」组织内容:找到最接近的症状,按顺序排查即可,不需要盲目重装。"
+  directAnswer="代理连不上时,按固定顺序排查比乱试有效:先确认基础网络与系统时间,再看客户端状态和订阅是否有效,然后是节点、DNS、IPv6、分流规则、防火墙,最后才是线路问题。不要一上来就重装客户端——重装会掩盖现象,让问题更难定位。本站按 16 种具体症状分别给出了排查流程。"
+  extraJsonLd={jsonLd}
+>
+  <section class="section">
+    <h2>通用排查顺序</h2>
+    <p class="section-lead">
+      无论什么现象,排查都遵循同一个从外到内的顺序。单独的故障文章会告诉你在哪一步重点检查。
+    </p>
+    <StepList
+      steps={[
+        { name: '网络状态', detail: '关闭代理后设备能否正常上网' },
+        { name: '系统时间', detail: '时间偏差会导致 TLS 握手失败' },
+        { name: '客户端状态', detail: '是否真正在运行、有没有报错' },
+        { name: '订阅状态', detail: '是否过期、能否手动更新' },
+        { name: '节点状态', detail: '换节点测试,区分单点和整体故障' },
+        { name: 'DNS 与 IPv6', detail: '解析失败和 IPv6 干扰是常见隐性原因' },
+        { name: '路由规则与防火墙', detail: '分流规则、系统防火墙和安全软件' },
+        { name: '线路问题', detail: '以上都正常,多半是服务商侧故障' },
+      ]}
+    />
+  </section>
+
+  {featured.length > 0 && (
+    <section class="section">
+      <h2>最常见的问题</h2>
+      <div class="grid grid-2">
+        {featured.map((c) => (
+          <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="section">
+    <h2>全部排查指南</h2>
+    <div class="grid grid-3">
+      {rest.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/clients/">
+        <h3>客户端教程</h3>
+        <p>配置错误也会表现为连接故障,先确认客户端设置是否正确。</p>
+      </a>
+      <a class="card" href="/subscription/">
+        <h3>订阅管理</h3>
+        <p>订阅链接的获取、更新与保护,一半的连接问题和订阅有关。</p>
+      </a>
+      <a class="card" href="/protocols/">
+        <h3>线路与协议</h3>
+        <p>理解线路和协议,能更快判断问题出在自己这边还是服务商那边。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

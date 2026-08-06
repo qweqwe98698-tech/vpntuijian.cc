@@ -1,0 +1,60 @@
+---
+/**
+ * 统一 SEO 头部:title / description / canonical / robots / OG / Twitter / JSON-LD
+ * 所有页面必须经由本组件输出元数据。
+ */
+import { SITE } from '@lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** 页面路径,以 / 开头、以 / 结尾,如 /clients/clash-import/ */
+  path: string;
+  noindex?: boolean;
+  canonical?: string;
+  ogType?: 'website' | 'article';
+  publishedAt?: Date;
+  updatedAt?: Date;
+  /** JSON-LD 对象数组,由页面按类型传入 */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  path,
+  noindex = false,
+  canonical,
+  ogType = 'website',
+  publishedAt,
+  updatedAt,
+  jsonLd = [],
+} = Astro.props;
+
+const canonicalUrl = canonical ?? `${SITE.url}${path}`;
+const ogImage = `${SITE.url}/og-cover.png`;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+{noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow" />}
+
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content="zh_CN" />
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={ogImage} />
+{publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
+{updatedAt && <meta property="article:modified_time" content={updatedAt.toISOString()} />}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+{jsonLd.map((schema) => (
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+))}

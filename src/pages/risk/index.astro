@@ -1,0 +1,97 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import RiskNotice from '@components/RiskNotice.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const articles = (await getPublished('articles')).map(toCard);
+const riskArticles = articles.filter((c) => c.category === '风险与避坑');
+
+const faq = [
+  {
+    q: '机场跑路了钱能要回来吗?',
+    a: '几乎不能。这类服务多为匿名运营,没有监管渠道可以投诉。风险控制只能靠事前:短周期付费、分散使用、识别跑路前兆。把预付金额控制在可以接受直接损失的范围内。',
+  },
+  {
+    q: '用这类服务本身有什么需要注意的?',
+    a: '两个层面:一是法律层面,请了解并遵守你所在地区的法律法规;二是数据层面,代理服务商理论上可以看到你的未加密流量,不要在代理环境下处理高敏感信息,重要账号务必开启两步验证。',
+  },
+  {
+    q: '怎么判断一个评测网站可不可信?',
+    a: '看三点:是否披露推广关系、是否敢写服务的缺点和风险、榜单是否常年不变只换链接。只说优点、全是注册按钮的站点,本质是广告页而不是评测。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(riskArticles.map((c) => ({ name: c.title, url: c.href }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="风险与避坑中心：跑路信号、付款安全与虚假宣传识别"
+  description="机场行业的风险自保方法:跑路前的运营与商业信号如何识别、付款方式怎么选才留有申诉余地、订阅链接泄露的后果与处理、以及虚假宣传和伪造测速图的常见话术。买之前先看这些。"
+  path="/risk/"
+  h1="风险与避坑中心"
+  lead="这个行业没有监管兜底,自保意识比任何推荐都重要。这里整理最常见的损失场景和对应的预防动作。"
+  directAnswer="这类服务没有监管保障,预付越多风险越大。降低风险的核心做法有四条:第一次只买最低档月付、始终保留一个备用服务、使用保留争议处理渠道的付款方式、把订阅链接当作账号密码保管。跑路前通常有迹可循——客服失联、公告停更、节点长期不修、反常的长期套餐大促。"
+  extraJsonLd={jsonLd}
+>
+  <RiskNotice
+    title="三条底线"
+    items={[
+      '不长周期预付:无论促销多诱人,未经验证的服务只月付。',
+      '不轻信绝对承诺:「永不跑路」「100% 解锁」「无限流量不限速」都是营销话术。',
+      '不在代理环境处理高敏感信息:重要账号开启两步验证,了解并遵守当地法律法规。',
+    ]}
+  />
+
+  <section class="section">
+    <h2>风险专题文章</h2>
+    <div class="grid grid-2">
+      {riskArticles.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>常见损失场景速查</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>预付跑路</h3>
+        <p>典型剧本:大促吸量 → 服务质量下滑 → 客服失联 → 网站关闭。识别方法见<a href="/guides/airport-runaway-warning-signs/">跑路信号</a>一文。</p>
+      </div>
+      <div class="card">
+        <h3>付款信息泄露</h3>
+        <p>不明支付网关和代付渠道可能留存你的付款信息。优先选择主流聚合支付,避免直接转账,详见<a href="/guides/payment-safety-guide/">付款安全</a>。</p>
+      </div>
+      <div class="card">
+        <h3>订阅链接泄露</h3>
+        <p>订阅链接等同于账号使用权,被他人使用会挤占设备额度甚至导致封号。不要在公开场合分享,泄露后立即重置。</p>
+      </div>
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/choose/">
+        <h3>选择指南</h3>
+        <p>把风险判断纳入选购流程。</p>
+      </a>
+      <a class="card" href="/disclosure/">
+        <h3>推广披露</h3>
+        <p>本站如何处理推广关系。</p>
+      </a>
+      <a class="card" href="/methodology/">
+        <h3>测试方法</h3>
+        <p>本站信息的核验方式和局限。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

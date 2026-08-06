@@ -1,0 +1,137 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import ResponsiveTable from '@components/ResponsiveTable.astro';
+import DefinitionBox from '@components/DefinitionBox.astro';
+import PicksGrid from '@components/PicksGrid.astro';
+import PromotedProviders from '@components/PromotedProviders.astro';
+import { getCollection } from 'astro:content';
+import { getPublished, toCard } from '@lib/content';
+import { faqSchema, itemListSchema } from '@lib/schema';
+
+const pickEntries = await getPublished('picks');
+const providerEntries = await getCollection('providers');
+const articles = (await getPublished('articles')).map(toCard);
+const picks = articles.filter((c) =>
+  ['first-time-airport-params', 'plan-billing-cycle-guide', 'how-much-traffic-needed', 'multi-device-plan-guide'].includes(c.slug)
+);
+
+const faq = [
+  {
+    q: '机场和传统 VPN 有什么区别?',
+    a: '传统 VPN 通常是一个应用绑定自家服务器,开关即用;机场只卖节点订阅,需要配合 Clash、Shadowrocket 等第三方客户端使用。机场的优势是节点多、线路选择灵活、按流量或周期计费;代价是配置门槛稍高,且服务质量参差不齐。',
+  },
+  {
+    q: '2026 年选机场和以前有什么不同?',
+    a: '基本判断标准没有变:线路类型、流量政策、运营时长和信息透明度仍然是核心。变化在于协议生态(Hysteria 2 等新协议普及)和使用场景(AI 工具访问成为高频需求)。本页内容会随年度情况持续更新,以更新时间为准。',
+  },
+  {
+    q: '为什么这里不放一个直接的排行榜?',
+    a: '服务质量随时间波动明显,固定名次的榜单很快失真,而且容易被推广利益影响。我们改用服务档案加数据状态标识的方式:告诉你每项信息核实到什么程度,让你按自己的需求判断。',
+  },
+];
+
+const jsonLd = [
+  faqSchema(faq)!,
+  itemListSchema(
+    pickEntries.map((e) => ({ name: e.data.primaryKeyword, url: `/airport/${e.id}/` }))
+  ),
+];
+---
+
+<SectionLayout
+  title="机场怎么选?五个判断维度与按需求分类的选购专题"
+  description="机场怎么选:线路类型、流量政策、付费周期、运营可信度与客户端支持五个判断维度,以及按客户端、场景、线路和价格分类的 16 个选购专题入口。"
+  path="/airport/"
+  h1="机场怎么选:判断维度与选购专题"
+  lead="「机场」是提供多节点订阅的网络代理服务的俗称。这一页是机场推荐内容的总入口:先给判断标准,再按客户端、场景、线路和价格分流到各专题。"
+  directAnswer="选机场看五件事:线路类型决定高峰期体验,流量与设备政策决定够不够用,付费周期决定风险敞口,运营透明度决定跑路概率,客户端支持决定你能不能顺利配置。第一次买只选最低档月付,用满一个月再决定是否续长期。本站九家档案均有第一方实测数据。"
+  extraJsonLd={jsonLd}
+>
+  <DefinitionBox
+    term="机场"
+    definition="机场指以订阅链接方式向用户交付多个代理节点的服务,用户使用 Clash、Shadowrocket 等客户端导入订阅后即可切换节点上网。名称源于早期软件的纸飞机图标。"
+    glossaryHref="/glossary/airport/"
+  />
+
+  <section class="section">
+    <h2>判断一个机场值不值得买,看这五件事</h2>
+    <ResponsiveTable label="机场核心判断维度">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">维度</th>
+            <th scope="col">看什么</th>
+            <th scope="col">对应内容</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">线路类型</th>
+            <td>直连、中转还是 IEPL/IPLC 专线,决定高峰期体验</td>
+            <td><a href="/protocols/direct-relay-dedicated-lines/">线路怎么选</a></td>
+          </tr>
+          <tr>
+            <th scope="row">流量与设备政策</th>
+            <td>月流量额度、是否限速、同时在线设备数</td>
+            <td><a href="/guides/how-much-traffic-needed/">流量估算</a></td>
+          </tr>
+          <tr>
+            <th scope="row">付费周期</th>
+            <td>是否支持月付、退款规则是否明确</td>
+            <td><a href="/guides/plan-billing-cycle-guide/">套餐周期怎么选</a></td>
+          </tr>
+          <tr>
+            <th scope="row">运营可信度</th>
+            <td>运营时长、信息透明度、社区口碑变化</td>
+            <td><a href="/guides/airport-runaway-warning-signs/">风险信号识别</a></td>
+          </tr>
+          <tr>
+            <th scope="row">客户端支持</th>
+            <td>是否提供主流客户端的订阅格式与教程</td>
+            <td><a href="/clients/">客户端教程</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </ResponsiveTable>
+  </section>
+
+  <PromotedProviders providers={providerEntries} bare={true} />
+
+  <PicksGrid
+    entries={pickEntries}
+    title="按需求进入对应专题"
+    lead="每个专题只回答一类需求:该看什么、怎么自己验证、常见的坑在哪。"
+    bare={true}
+  />
+
+  <section class="section">
+    <h2>选择指南精选</h2>
+    <div class="grid grid-2">
+      {picks.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>下一步</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/directory/">
+        <h3>服务导航</h3>
+        <p>查看服务档案:套餐、线路、客户端支持与风险提示。</p>
+      </a>
+      <a class="card" href="/stable/">
+        <h3>稳定机场怎么判断</h3>
+        <p>把「稳定」拆解成可验证的具体指标。</p>
+      </a>
+      <a class="card" href="/value/">
+        <h3>性价比套餐选择</h3>
+        <p>预算有限时的取舍思路和避坑要点。</p>
+      </a>
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+</SectionLayout>

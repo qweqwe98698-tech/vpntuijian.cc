@@ -1,0 +1,53 @@
+---
+/** 更新记录时间线 */
+import { formatDate } from '@lib/site';
+
+interface Props {
+  items: { date: Date | string; note: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="update-timeline" aria-label="更新记录">
+    <h2>更新记录</h2>
+    <ul>
+      {items.map((item) => (
+        <li>
+          <span class="ut-date">{typeof item.date === 'string' ? item.date : formatDate(item.date)}</span>
+          <span>{item.note}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .update-timeline ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-left: 2px solid var(--color-border);
+  }
+  .update-timeline li {
+    padding: 0 0 var(--space-3) var(--space-4);
+    position: relative;
+    font-size: var(--text-sm);
+  }
+  .update-timeline li::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0.5em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-brand);
+  }
+  .ut-date {
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-right: var(--space-3);
+  }
+</style>

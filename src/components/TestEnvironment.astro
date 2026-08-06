@@ -1,0 +1,46 @@
+---
+/** 测试环境说明(测速/体验数据的前提条件) */
+interface Props {
+  items?: { label: string; value: string }[];
+}
+
+const { items = [] } = Astro.props;
+---
+
+<div class="notice test-env">
+  <span class="notice-title">测试环境说明</span>
+  {items.length > 0 ? (
+    <dl>
+      {items.map((item) => (
+        <>
+          <dt>{item.label}</dt>
+          <dd>{item.value}</dd>
+        </>
+      ))}
+    </dl>
+  ) : (
+    <p>本页暂无独立测试数据。补充实测后会在此说明测试网络、设备、时间与客户端版本。</p>
+  )}
+  <p class="test-env-note">
+    以下数据用于展示内容结构或提供一般参考。实际结果会受到设备、网络、地区、时间和线路状态影响。
+  </p>
+</div>
+
+<style>
+  .test-env dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-4);
+    margin: 0 0 var(--space-2);
+  }
+  .test-env dt {
+    font-weight: 600;
+  }
+  .test-env dd {
+    margin: 0;
+  }
+  .test-env-note {
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+/** 专题页的评估维度表:这个主题下判断服务好坏的具体标准 */
+import ResponsiveTable from './ResponsiveTable.astro';
+
+interface Props {
+  criteria: { name: string; what: string; why?: string | undefined }[];
+  caption?: string;
+}
+
+const { criteria, caption = '评估维度' } = Astro.props;
+const hasWhy = criteria.some((c) => c.why);
+---
+
+{criteria.length > 0 && (
+  <section class="criteria">
+    <h2>{caption}</h2>
+    <ResponsiveTable label={caption}>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">维度</th>
+            <th scope="col">具体看什么</th>
+            {hasWhy && <th scope="col">为什么重要</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {criteria.map((c) => (
+            <tr>
+              <th scope="row">{c.name}</th>
+              <td>{c.what}</td>
+              {hasWhy && <td>{c.why ?? '—'}</td>}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </ResponsiveTable>
+  </section>
+)}

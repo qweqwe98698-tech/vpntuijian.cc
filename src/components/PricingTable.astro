@@ -1,0 +1,39 @@
+---
+/** 套餐概览表 */
+import ResponsiveTable from './ResponsiveTable.astro';
+
+interface Props {
+  pricing: { plan: string; price: string; traffic: string; devices?: string | undefined; note?: string | undefined }[];
+}
+
+const { pricing } = Astro.props;
+const hasDevices = pricing.some((p) => p.devices);
+const hasNote = pricing.some((p) => p.note);
+---
+
+{pricing.length > 0 && (
+  <ResponsiveTable label="套餐概览">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">套餐</th>
+          <th scope="col">价格</th>
+          <th scope="col">流量</th>
+          {hasDevices && <th scope="col">设备数</th>}
+          {hasNote && <th scope="col">备注</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {pricing.map((p) => (
+          <tr>
+            <th scope="row">{p.plan}</th>
+            <td>{p.price}</td>
+            <td>{p.traffic}</td>
+            {hasDevices && <td>{p.devices ?? '—'}</td>}
+            {hasNote && <td>{p.note ?? '—'}</td>}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </ResponsiveTable>
+)}

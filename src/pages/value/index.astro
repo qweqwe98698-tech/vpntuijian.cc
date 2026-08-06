@@ -1,0 +1,153 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import FAQSection from '@components/FAQSection.astro';
+import ResponsiveTable from '@components/ResponsiveTable.astro';
+import TipBox from '@components/TipBox.astro';
+import WarningBox from '@components/WarningBox.astro';
+import { faqSchema } from '@lib/schema';
+
+// 承接问题库第 3 节「便宜机场推荐」问题簇
+const faq = [
+  {
+    q: '便宜机场一般多少钱一个月?',
+    a: '常见的入门档在每月 10 到 20 元区间,对应几十到一两百 GB 流量和 2 到 3 台设备。低于 10 元的套餐通常在流量、设备数或线路质量上有明显取舍。具体价格以服务方套餐页为准,本页只提供区间参考。',
+  },
+  {
+    q: '每月 10 元的机场靠谱吗?',
+    a: '价格本身不决定靠谱与否,要看这个价格对应什么配置。10 元档通常走普通中转或直连,高峰期拥堵概率更高、节点调整更频繁、售后更慢。适合轻度浏览,不适合依赖代理办公或重度看视频。',
+  },
+  {
+    q: '低价机场为什么可以卖得这么便宜?',
+    a: '主要靠共享带宽摊薄成本:同一条线路卖给更多人,单价就能压下来。代价是高峰期人均带宽下降。此外还有用低价拉新、靠长周期套餐回笼资金的模式,后者的风险明显更高。',
+  },
+  {
+    q: '便宜机场会不会限制速度或设备数量?',
+    a: '很常见。低价档普遍有速度上限、设备数上限,或对高倍率节点设置额外限制。这些条款通常写在套餐页而不是宣传页,下单前要找到并看清。',
+  },
+  {
+    q: '便宜机场晚高峰会不会很慢?',
+    a: '大概率会有明显劣化,这是共享带宽模式的固有特征。合理的期待不是「不掉速」,而是「掉速幅度可接受、不会完全不可用」。判断方法见晚高峰排查一文。',
+  },
+  {
+    q: '便宜机场是否容易跑路?',
+    a: '低价本身不等于会跑路,但低价加长周期是风险最高的组合。异常低于市场价的年付促销尤其需要警惕,相关信号见跑路预警一文。',
+  },
+  {
+    q: '便宜机场支持 ChatGPT 和 Netflix 吗?',
+    a: '不能一概而论,取决于落地 IP 而非价格。低价档的出口 IP 通常共享程度高,更容易触发 AI 工具的验证或被流媒体识别。买之前用试用或月付实测,不要相信宣传页的解锁清单。',
+  },
+  {
+    q: '便宜机场和免费机场有什么区别?',
+    a: '付费低价服务至少有明确的责任方和条款,免费节点通常来源不明、随时失效,而且你无法知道流量经过了谁的服务器。涉及账号登录的场景不建议使用来源不明的免费节点。',
+  },
+  {
+    q: '低价年付套餐值得囤吗?',
+    a: '不建议。低价加长周期是跑路风险最高的组合,促销力度异常大时尤其要警惕。低预算用户更应该坚持月付,把试错成本控制在一顿饭钱以内。',
+  },
+  {
+    q: '便宜机场和高性价比机场是一回事吗?',
+    a: '不是。「便宜」看绝对价格,「性价比」看单位价格买到的质量——一个 15 元但晚高峰可用的套餐,性价比高于 8 元但经常连不上的。两者的算法不同,性价比的具体计算方法另有一页说明。',
+  },
+];
+
+const jsonLd = [faqSchema(faq)!];
+---
+
+<SectionLayout
+  title="便宜机场推荐:低价套餐怎么选才不踩坑"
+  description="便宜机场怎么选:10 元、15 元、20 元各档能买到什么配置,低价套餐的真实代价在哪,学生党和轻度用户的合理预期,以及低预算下绝对不能省的几件事。"
+  path="/value/"
+  h1="便宜机场推荐与低价套餐选择指南"
+  lead="预算有限不等于只能碰运气。想清楚哪些体验可以妥协、哪些风险绝对不能碰,低价套餐也能用得安心。本页只谈绝对价格,单位价格的质量折算见性价比专题。"
+  directAnswer="便宜机场的常见入门档在每月 10 到 20 元,对应几十到一两百 GB 流量。低价的代价通常是共享带宽比例更高、高峰期劣化更明显、售后更慢。价格本身不决定靠不靠谱,关键是看这个价格对应什么配置,以及条款里有没有速度和设备数的隐性限制。"
+  extraJsonLd={jsonLd}
+>
+  <section class="section">
+    <h2>不同预算区间的合理预期</h2>
+    <ResponsiveTable label="预算区间与预期对照">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">月预算区间</th>
+            <th scope="col">典型配置</th>
+            <th scope="col">合理预期</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">10 元以下</th>
+            <td>公网中转为主,流量 50–200GB</td>
+            <td>日常浏览可用,晚高峰波动明显,需接受偶发故障</td>
+          </tr>
+          <tr>
+            <th scope="row">10–30 元</th>
+            <td>优质中转或部分专线,流量 100–300GB</td>
+            <td>多数场景稳定,晚高峰有降速但可用,主流选择区间</td>
+          </tr>
+          <tr>
+            <th scope="row">30 元以上</th>
+            <td>IEPL/IPLC 专线为主</td>
+            <td>高峰期波动小,适合办公和重度使用</td>
+          </tr>
+        </tbody>
+      </table>
+    </ResponsiveTable>
+    <p class="table-note">
+      以上为一般市场参考区间,具体以各服务实际套餐页为准。区间划分逻辑详见
+      <a href="/guides/plan-billing-cycle-guide/">月付、季付和不限时套餐怎么选</a>。
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>可以省的和不能省的</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>可以妥协</h3>
+        <p>峰值速度、节点地区数量、专线占比、客服响应速度——这些降级会影响体验,但不会造成损失。</p>
+      </div>
+      <div class="card">
+        <h3>不能妥协</h3>
+        <p>月付选项、明确的流量政策、可用的售后渠道、基本的运营透明度——缺任何一项都是在赌运气。</p>
+      </div>
+    </div>
+    <TipBox>
+      <p>
+        低预算用户最实用的策略:同时了解两家月付服务,主用一家、备用一家。单点依赖在低价区间风险最高,流量估算方法见
+        <a href="/guides/how-much-traffic-needed/">一个人需要多少流量</a>。
+      </p>
+    </TipBox>
+    <WarningBox title="低价陷阱">
+      <p>
+        「终身套餐」「一次买断」在这个行业几乎等于预付跑路风险,常见套路识别见
+        <a href="/guides/airport-runaway-warning-signs/">机场跑路前常见的风险信号</a>。
+      </p>
+    </WarningBox>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/choose/">
+        <h3>选择指南</h3>
+        <p>完整的选购判断框架。</p>
+      </a>
+      <a class="card" href="/stable/">
+        <h3>稳定机场</h3>
+        <p>预算充足时如何为稳定性付费。</p>
+      </a>
+      <a class="card" href="/directory/">
+        <h3>服务导航</h3>
+        <p>按价格与线路筛选服务档案。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>
+
+<style>
+  .table-note {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

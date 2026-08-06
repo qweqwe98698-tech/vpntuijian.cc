@@ -1,0 +1,18 @@
+---
+/** 适合人群 */
+interface Props {
+  items: string[];
+  title?: string;
+}
+
+const { items, title = '适合以下情况' } = Astro.props;
+---
+
+{items.length > 0 && (
+  <div class="notice notice-tip">
+    <span class="notice-title">{title}</span>
+    <ul>
+      {items.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+)}

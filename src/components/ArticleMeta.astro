@@ -1,0 +1,25 @@
+---
+/** 文章元信息行:作者 / 发布 / 更新 / 数据状态 */
+import { formatDate } from '@lib/site';
+import DataStatusBadge from './DataStatusBadge.astro';
+
+interface Props {
+  authorName: string;
+  reviewerName?: string | undefined;
+  publishedAt: Date;
+  updatedAt: Date;
+  reviewedAt?: Date | undefined;
+  dataStatus?: string | undefined;
+}
+
+const { authorName, reviewerName, publishedAt, updatedAt, reviewedAt, dataStatus } = Astro.props;
+---
+
+<div class="meta-line">
+  <span>作者:{authorName}</span>
+  {reviewerName && <span>审核:{reviewerName}</span>}
+  <span>发布于 <time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time></span>
+  <span>更新于 <time datetime={updatedAt.toISOString()}>{formatDate(updatedAt)}</time></span>
+  {reviewedAt && <span>最后核验 <time datetime={reviewedAt.toISOString()}>{formatDate(reviewedAt)}</time></span>}
+  {dataStatus && <DataStatusBadge status={dataStatus} />}
+</div>

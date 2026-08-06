@@ -1,0 +1,69 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const entries = await getPublished('scenarios');
+const cards = entries.map(toCard);
+
+const faq = [
+  {
+    q: '为什么不同用途要选不同节点?',
+    a: '因为服务对 IP 的要求不同:AI 工具看重 IP 干净程度和会话稳定性,流媒体看重节点所在地区和解锁状态,远程办公看重延迟和长连接稳定。同一个节点很难同时在所有场景表现最好。',
+  },
+  {
+    q: '一个机场能覆盖所有场景吗?',
+    a: '节点数量足够多、地区覆盖广的服务通常可以覆盖大部分日常场景,但重度流媒体或对稳定性要求极高的办公场景,可能需要更针对性的选择。先明确主要用途再选服务,比事后迁就更省钱。',
+  },
+  {
+    q: '场景文章里的结论会过时吗?',
+    a: '会。各平台的风控策略和节点解锁状态都在变化,我们在每篇文章标注更新时间,并优先教你「怎么自己判断」而不是只给一个会过时的答案。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(cards.map((c) => ({ name: c.title, url: c.href }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="使用场景中心：AI 工具、流媒体与远程办公的节点选择"
+  description="按实际用途选择节点和服务:ChatGPT 与 Claude 等 AI 工具、Netflix 等流媒体、远程办公和多设备场景的具体判断方法与常见问题。"
+  path="/scenarios/"
+  h1="使用场景中心"
+  lead="先想清楚主要用来做什么,再决定怎么选节点。每个场景对线路、IP 和稳定性的真实要求并不一样,这里把判断方法讲透。"
+  directAnswer="不同用途对节点的要求差别很大。AI 工具和流媒体看的不是带宽而是出口 IP 的信誉与归属;视频会议对延迟抖动和丢包最敏感;下载大文件才真正吃带宽。先想清楚主要用来做什么,再按该场景的硬性要求筛选,比笼统追求「快」有效得多。"
+  extraJsonLd={jsonLd}
+>
+  <section class="section">
+    <h2>场景指南</h2>
+    <div class="grid grid-3">
+      {cards.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/choose/">
+        <h3>选择指南</h3>
+        <p>把场景需求转化为具体的选购参数。</p>
+      </a>
+      <a class="card" href="/protocols/">
+        <h3>线路与协议</h3>
+        <p>理解为什么某些线路更适合特定场景。</p>
+      </a>
+      <a class="card" href="/troubleshooting/">
+        <h3>故障排查</h3>
+        <p>场景用不了?先确认是节点问题还是配置问题。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

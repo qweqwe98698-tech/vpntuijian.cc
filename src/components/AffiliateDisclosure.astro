@@ -1,0 +1,25 @@
+---
+/** 推广关系说明 */
+interface Props {
+  text?: string | undefined;
+}
+
+const { text } = Astro.props;
+const defaultText =
+  '本站部分链接可能是推广链接:通过这些链接完成购买时,本站可能获得佣金,不会增加你的费用。推广关系不影响内容结论,详见推广披露页。';
+---
+
+<div class="notice disclosure">
+  <span class="notice-title">推广关系说明</span>
+  <p>
+    {text ?? defaultText}
+    <a href="/disclosure/">了解详情</a>
+  </p>
+</div>
+
+<style>
+  .disclosure {
+    color: var(--color-muted);
+    background: var(--color-bg-soft);
+  }
+</style>

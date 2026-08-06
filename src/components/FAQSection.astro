@@ -1,0 +1,74 @@
+---
+/**
+ * FAQ 区块。可见问答与 FAQPage JSON-LD 使用同一份数据,不可能不一致。
+ *
+ * 答案里直接写的站内裸路径会被换成带自然锚文本的链接:裸路径既不可点击,
+ * 也不产生内链权重。JSON-LD 那侧仍使用纯文本,由页面自行传入原始数据。
+ */
+import { pathLabels } from '@lib/site';
+
+interface Props {
+  faq: { q: string; a: string }[];
+  title?: string;
+}
+
+const { faq, title = '常见问题' } = Astro.props;
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** 把答案里的站内裸路径替换为可点击链接。内容均为第一方,转义后再拼接。 */
+function renderAnswer(text: string): string {
+  let html = escapeHtml(text);
+  // 长路径优先替换,避免 /directory/ 先吃掉 /directory/xxx/
+  const paths = Object.keys(pathLabels).sort((a, b) => b.length - a.length);
+  for (const p of paths) {
+    if (!html.includes(p)) continue;
+    const label = escapeHtml(pathLabels[p]!);
+    html = html.split(p).join(`<a href="${p}">${label}</a>`);
+  }
+  return html;
+}
+---
+
+{faq.length > 0 && (
+  <section class="faq" aria-label={title}>
+    <h2>{title}</h2>
+    {faq.map((item) => (
+      <details class="faq-item">
+        <summary>{item.q}</summary>
+        <p set:html={renderAnswer(item.a)} />
+      </details>
+    ))}
+  </section>
+)}
+
+<style>
+  .faq-item {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-3);
+    background: var(--color-bg);
+  }
+  .faq-item summary {
+    padding: var(--space-3) var(--space-4);
+    font-weight: 600;
+    color: var(--color-heading);
+    cursor: pointer;
+    line-height: var(--leading-normal);
+  }
+  .faq-item summary:hover {
+    color: var(--color-brand);
+  }
+  .faq-item p {
+    padding: 0 var(--space-4) var(--space-3);
+    margin: 0;
+    color: var(--color-text);
+    line-height: var(--leading-loose);
+  }
+</style>

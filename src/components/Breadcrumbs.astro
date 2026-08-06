@@ -1,0 +1,65 @@
+---
+/** 面包屑导航(可见部分;BreadcrumbList JSON-LD 由页面经 Seo 组件输出) */
+
+export interface Crumb {
+  name: string;
+  href: string;
+}
+
+interface Props {
+  items: Crumb[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumbs" aria-label="面包屑">
+  <ol>
+    {items.map((item, i) => (
+      <li>
+        {i < items.length - 1 ? (
+          <>
+            <a href={item.href}>{item.name}</a>
+            <span class="sep" aria-hidden="true">/</span>
+          </>
+        ) : (
+          <span aria-current="page">{item.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    font-size: var(--text-sm);
+    padding: var(--space-4) 0 0;
+  }
+  .breadcrumbs ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+  }
+  .breadcrumbs li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+  .breadcrumbs a {
+    color: var(--color-muted);
+  }
+  .breadcrumbs a:hover {
+    color: var(--color-brand);
+  }
+  .sep {
+    color: var(--color-border);
+    margin: 0 var(--space-1);
+  }
+  .breadcrumbs [aria-current='page'] {
+    color: var(--color-heading);
+    font-weight: 500;
+  }
+</style>

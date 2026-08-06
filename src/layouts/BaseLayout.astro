@@ -1,0 +1,53 @@
+---
+/** 全站基础布局:HTML 骨架 + 页眉 + 页脚 */
+import '../styles/global.css';
+import Seo from '@components/Seo.astro';
+import SkipLink from '@components/SkipLink.astro';
+import SiteHeader from '@components/SiteHeader.astro';
+import SiteFooter from '@components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  noindex?: boolean;
+  canonical?: string;
+  ogType?: 'website' | 'article';
+  publishedAt?: Date;
+  updatedAt?: Date;
+  jsonLd?: Record<string, unknown>[];
+}
+
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="VPN推荐指南" href="/rss.xml" />
+    <meta name="generator" content={Astro.generator} />
+    <script is:inline>
+      // 尽早应用已保存的主题,避免闪烁
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark') document.documentElement.dataset.theme = 'dark';
+      } catch (e) {}
+    </script>
+    <Seo {...props} />
+  </head>
+  <!--
+    noindex 页面(搜索页、404、标签页、示例数据页)同时排除出 Pagefind 索引。
+    它们要么是功能页,要么是分类页的重复内容,出现在站内搜索结果里只会制造噪音。
+  -->
+  <body data-pagefind-ignore={props.noindex ? 'all' : undefined}>
+    <SkipLink />
+    <SiteHeader currentPath={props.path} />
+    <main id="main-content">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>

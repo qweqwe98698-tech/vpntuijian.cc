@@ -1,0 +1,19 @@
+---
+/** 风险提示框 */
+interface Props {
+  title?: string;
+  items?: string[];
+}
+
+const { title = '风险提示', items = [] } = Astro.props;
+---
+
+<div class="notice notice-danger">
+  <span class="notice-title">{title}</span>
+  {items.length > 0 && (
+    <ul>
+      {items.map((item) => <li>{item}</li>)}
+    </ul>
+  )}
+  <slot />
+</div>

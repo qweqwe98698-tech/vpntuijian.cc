@@ -1,0 +1,13 @@
+---
+/** 警告提示框 */
+interface Props {
+  title?: string;
+}
+
+const { title = '注意' } = Astro.props;
+---
+
+<div class="notice notice-warning">
+  <span class="notice-title">{title}</span>
+  <slot />
+</div>

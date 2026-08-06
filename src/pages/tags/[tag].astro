@@ -1,0 +1,52 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import { getAllCards, type ArticleCard as Card } from '@lib/content';
+
+/** 少于该篇数的标签不生成页面,避免产生薄内容 */
+export const MIN_ARTICLES_PER_TAG = 3;
+
+export async function getStaticPaths() {
+  const cards = await getAllCards();
+  const byTag = new Map<string, Card[]>();
+  for (const c of cards) {
+    for (const t of c.tags) {
+      const list = byTag.get(t) ?? [];
+      list.push(c);
+      byTag.set(t, list);
+    }
+  }
+  return [...byTag.entries()]
+    .filter(([, items]) => items.length >= MIN_ARTICLES_PER_TAG)
+    .map(([tag, items]) => ({
+      params: { tag },
+      props: { tag, items },
+    }));
+}
+
+const { tag, items } = Astro.props;
+// 标签页统一 noindex, follow:文章数量达标并补充独立介绍前不参与索引
+---
+
+<SectionLayout
+  title={`标签:${tag}`}
+  description={`标签「${tag}」下的全部文章列表,共 ${items.length} 篇。`}
+  path={`/tags/${encodeURIComponent(tag)}/`}
+  h1={`标签:${tag}`}
+  lead={`共 ${items.length} 篇相关文章。`}
+  noindex={true}
+  isCollection={false}
+  crumbs={[
+    { name: '首页', href: '/' },
+    { name: '标签索引', href: '/tags/' },
+    { name: tag, href: `/tags/${encodeURIComponent(tag)}/` },
+  ]}
+>
+  <section class="section">
+    <div class="grid grid-2">
+      {items.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+</SectionLayout>

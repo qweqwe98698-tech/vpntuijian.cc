@@ -1,0 +1,18 @@
+---
+/** 数据状态标识:verified / reference / sample / pending / outdated */
+import { dataStatusLabels } from '@lib/site';
+
+interface Props {
+  status: string;
+  verifiedAt?: Date | undefined;
+}
+
+const { status, verifiedAt } = Astro.props;
+const info = dataStatusLabels[status] ?? { label: status, tone: 'muted' };
+const toneClass =
+  info.tone === 'ok' ? 'badge-ok' : info.tone === 'info' ? 'badge-info' : info.tone === 'warn' ? 'badge-warn' : '';
+---
+
+<span class={`badge ${toneClass}`}>
+  {info.label}{verifiedAt && `(核验于 ${verifiedAt.toISOString().slice(0, 10)})`}
+</span>

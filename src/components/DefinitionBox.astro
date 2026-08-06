@@ -1,0 +1,18 @@
+---
+/** 一句话定义框(GEO 可提取) */
+interface Props {
+  term: string;
+  definition: string;
+  glossaryHref?: string | undefined;
+}
+
+const { term, definition, glossaryHref } = Astro.props;
+---
+
+<div class="notice notice-info definition-box">
+  <span class="notice-title">什么是{term}</span>
+  <p>
+    {definition}
+    {glossaryHref && <a href={glossaryHref}>查看术语详情</a>}
+  </p>
+</div>

@@ -1,0 +1,119 @@
+---
+/**
+ * 第一方实测数据展示。
+ *
+ * 展示原则:测试条件和数字同等重要。同一节点在不同 ISP、不同时段的结果差异
+ * 可以很大,脱离条件的速度数字没有参考价值,因此条件区块不可省略。
+ */
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '@lib/site';
+import ResponsiveTable from './ResponsiveTable.astro';
+
+type SpeedTest = NonNullable<CollectionEntry<'providers'>['data']['speedTest']>;
+
+interface Props {
+  test: SpeedTest;
+  /** 数据超过多少天视为偏旧 */
+  staleDays?: number;
+}
+
+const { test, staleDays = 60 } = Astro.props;
+const ageDays = Math.floor((Date.now() - test.testedAt.getTime()) / 86400000);
+const isStale = ageDays > staleDays;
+---
+
+<section class="speedtest" aria-labelledby="st-title">
+  <h2 id="st-title">本站实测数据</h2>
+
+  <div class="notice notice-info">
+    <span class="notice-title">测试条件</span>
+    <dl class="st-cond">
+      <dt>测试时间</dt>
+      <dd><time datetime={test.testedAt.toISOString()}>{formatDate(test.testedAt)}</time>({ageDays} 天前)</dd>
+      <dt>测试工具</dt>
+      <dd>{test.tool}</dd>
+      <dt>测试网络</dt>
+      <dd>{test.network}{test.threads && `,${test.threads} 线程`}</dd>
+      <dt>探测节点数</dt>
+      <dd>{test.nodeCount} 个{test.failedNodes > 0 && `,其中 ${test.failedNodes} 个测速为零或近乎为零`}</dd>
+      {test.protocol && (
+        <>
+          <dt>节点协议</dt>
+          <dd>{test.protocol}</dd>
+        </>
+      )}
+    </dl>
+    <p class="st-caveat">
+      以上结果来自单一网络环境的一次测试,<strong>不代表你在其他 ISP、其他地区或其他时段能得到相同数字</strong>。
+      速度受本地宽带、线路拥挤程度和服务方当时的负载影响。本数据用于横向参照,不作为服务质量承诺。
+    </p>
+  </div>
+
+  {isStale && (
+    <div class="notice notice-warning">
+      <span class="notice-title">数据时效提示</span>
+      <p>
+        本次测试距今已有 {ageDays} 天。代理服务的节点与线路调整频繁,超过两个月的测速结果参考价值下降,建议以最新情况为准。
+      </p>
+    </div>
+  )}
+
+  {test.regions.length > 0 && (
+    <ResponsiveTable label="各地区实测结果">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">地区</th>
+            <th scope="col">节点数</th>
+            <th scope="col">TLS RTT</th>
+            <th scope="col">平均速度区间</th>
+          </tr>
+        </thead>
+        <tbody>
+          {test.regions.map((r) => (
+            <tr>
+              <th scope="row">{r.name}</th>
+              <td>{r.count}</td>
+              <td>{r.rtt}</td>
+              <td>{r.speed}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </ResponsiveTable>
+  )}
+
+  {test.note && <p class="st-note">{test.note}</p>}
+
+  <p class="st-method">
+    测试方法与指标含义见<a href="/methodology/">测试方法</a>。TLS RTT 为单次数据交换延迟,速度为多线程下载的平均值,
+    两者反映的是不同维度,延迟低不等于速度快——区别见<a href="/airport/low-latency/">低延迟机场推荐</a>。
+  </p>
+</section>
+
+<style>
+  .st-cond {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-4);
+    margin: 0 0 var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .st-cond dt {
+    font-weight: 600;
+    color: var(--color-heading);
+    white-space: nowrap;
+  }
+  .st-cond dd {
+    margin: 0;
+  }
+  .st-caveat {
+    font-size: var(--text-sm);
+    margin-bottom: 0;
+  }
+  .st-note,
+  .st-method {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

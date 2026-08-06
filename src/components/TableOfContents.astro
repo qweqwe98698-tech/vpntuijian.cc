@@ -1,0 +1,73 @@
+---
+/** 文章目录:桌面端侧栏显示,移动端折叠(details/summary) */
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const tocItems = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{tocItems.length > 1 && (
+  <details class="toc" open>
+    <summary>本文目录</summary>
+    <nav aria-label="文章目录">
+      <ul>
+        {tocItems.map((h) => (
+          <li class={h.depth === 3 ? 'toc-sub' : ''}>
+            <a href={`#${h.slug}`}>{h.text}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </details>
+)}
+
+<style>
+  .toc {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg-soft);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+  }
+  .toc summary {
+    font-weight: 600;
+    color: var(--color-heading);
+    cursor: pointer;
+    padding: var(--space-1) 0;
+  }
+  .toc ul {
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+  }
+  .toc li {
+    margin-bottom: var(--space-2);
+    line-height: var(--leading-normal);
+  }
+  .toc-sub {
+    padding-left: var(--space-4);
+  }
+  .toc a {
+    color: var(--color-muted);
+  }
+  .toc a:hover {
+    color: var(--color-brand);
+  }
+  @media (max-width: 1000px) {
+    .toc:not([data-always-open]) {
+      /* 移动端默认折叠由 JS 控制,无 JS 时保持展开可用 */
+    }
+  }
+</style>
+
+<script>
+  // 移动端默认折叠目录
+  const toc = document.querySelector<HTMLDetailsElement>('.toc');
+  if (toc && window.matchMedia('(max-width: 1000px)').matches) {
+    toc.open = false;
+  }
+</script>

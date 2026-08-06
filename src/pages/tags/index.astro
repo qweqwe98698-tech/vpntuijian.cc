@@ -1,0 +1,56 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import { getAllCards } from '@lib/content';
+import { MIN_ARTICLES_PER_TAG } from './[tag].astro';
+
+// 标签索引页:noindex(避免薄内容进入索引),仅作站内浏览辅助
+// 只列出实际生成了页面的标签,避免产生 404 内链
+const cards = await getAllCards();
+const tagCount = new Map<string, number>();
+for (const c of cards) {
+  for (const t of c.tags) tagCount.set(t, (tagCount.get(t) ?? 0) + 1);
+}
+const tags = [...tagCount.entries()]
+  .filter(([, count]) => count >= MIN_ARTICLES_PER_TAG)
+  .sort((a, b) => b[1] - a[1]);
+---
+
+<SectionLayout
+  title="标签索引"
+  description="按标签浏览全站文章。标签页为站内浏览辅助功能。"
+  path="/tags/"
+  h1="标签索引"
+  lead="按标签快速浏览相关文章。"
+  noindex={true}
+  isCollection={false}
+>
+  <section class="section">
+    <ul class="tag-cloud">
+      {tags.map(([tag, count]) => (
+        <li>
+          <a class="badge" href={`/tags/${encodeURIComponent(tag)}/`}>{tag}({count})</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</SectionLayout>
+
+<style>
+  .tag-cloud {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: 0;
+    margin: 0;
+  }
+  .tag-cloud .badge {
+    font-size: var(--text-sm);
+    padding: 0.4em 0.9em;
+  }
+  .tag-cloud .badge:hover {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+    text-decoration: none;
+  }
+</style>

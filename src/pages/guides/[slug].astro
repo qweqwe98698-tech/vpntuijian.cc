@@ -1,0 +1,25 @@
+---
+import { render } from 'astro:content';
+import ArticleLayout from '@layouts/ArticleLayout.astro';
+import { getPublished } from '@lib/content';
+
+export async function getStaticPaths() {
+  const entries = await getPublished('articles');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+// 按分类挂到对应 Hub
+const hubMap: Record<string, { name: string; href: string }> = {
+  选择指南: { name: '选择指南', href: '/choose/' },
+  风险与避坑: { name: '风险与避坑', href: '/risk/' },
+  新手入门: { name: '新手入门', href: '/start/' },
+};
+const hub = hubMap[entry.data.category] ?? { name: '实用指南', href: '/guides/' };
+---
+
+<ArticleLayout entry={entry} headings={headings} hub={hub}>
+  <Content />
+</ArticleLayout>

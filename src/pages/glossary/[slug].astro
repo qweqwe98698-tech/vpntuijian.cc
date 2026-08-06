@@ -1,0 +1,78 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import DefinitionBox from '@components/DefinitionBox.astro';
+import RelatedArticles from '@components/RelatedArticles.astro';
+import { resolveRelated } from '@lib/content';
+import { formatDate } from '@lib/site';
+import { breadcrumbSchema, articleSchema, definedTermSchema } from '@lib/schema';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('glossary', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const path = `/glossary/${entry.id}/`;
+const { Content } = await render(entry);
+const related = await resolveRelated(d.related ?? []);
+
+const crumbs = [
+  { name: '首页', href: '/' },
+  { name: '术语表', href: '/glossary/' },
+  { name: d.term, href: path },
+];
+---
+
+<BaseLayout
+  title={`${d.term}是什么意思？术语解释｜VPN推荐指南`}
+  description={d.seoDescription ?? d.definition}
+  path={path}
+  jsonLd={[
+    breadcrumbSchema(crumbs),
+    articleSchema({
+      title: `${d.term}(术语解释)`,
+      description: d.definition,
+      url: path,
+      publishedAt: d.publishedAt,
+      updatedAt: d.updatedAt,
+      authorName: '编辑部',
+      isTech: true,
+    }),
+    definedTermSchema({
+      term: d.term,
+      definition: d.definition,
+      url: path,
+      aliases: d.aliases,
+      category: d.category,
+    }),
+  ]}
+>
+  <div class="container">
+    <Breadcrumbs items={crumbs} />
+    <article class="prose glossary-entry">
+      <header class="page-header">
+        <h1>{d.term}</h1>
+        <div class="meta-line">
+          <span class="badge">{d.category}</span>
+          {d.aliases.length > 0 && <span>别名:{d.aliases.join('、')}</span>}
+          <span>更新于 <time datetime={d.updatedAt.toISOString()}>{formatDate(d.updatedAt)}</time></span>
+        </div>
+      </header>
+      <DefinitionBox term={d.term} definition={d.definition} />
+      <div class="article-body">
+        <Content />
+      </div>
+      <RelatedArticles items={related} title="相关词条与文章" />
+      <p><a href="/glossary/">← 返回术语表</a></p>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .glossary-entry {
+    padding-bottom: var(--space-8);
+  }
+</style>

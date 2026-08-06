@@ -1,0 +1,41 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '@layouts/ArticleLayout.astro';
+import CriteriaTable from '@components/CriteriaTable.astro';
+import ProviderList from '@components/ProviderList.astro';
+import ProviderListPending from '@components/ProviderListPending.astro';
+import { getPublished } from '@lib/content';
+
+export async function getStaticPaths() {
+  const entries = await getPublished('picks');
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+const d = entry.data;
+
+// 按 topics 匹配可展示的服务:必须是非草稿、非 noindex(排除示例档案)
+const matched = (await getCollection('providers'))
+  .filter((p) => !p.data.draft && !p.data.noindex)
+  .filter((p) => p.data.topics.includes(entry.id))
+  .sort((a, b) => a.data.name.localeCompare(b.data.name, 'zh-CN'));
+
+/**
+ * 展示名单需要同时满足两个条件:
+ * 1. providerListStatus 为 ready —— 编辑开关。排行榜页即使有匹配也不展示名单,
+ *    因为那一页的立场就是不发布名次;
+ * 2. 确实匹配到了服务。
+ */
+const showList = d.providerListStatus === 'ready' && matched.length > 0;
+---
+
+<ArticleLayout entry={entry} headings={headings} hub={{ name: '机场推荐', href: '/airport/' }}>
+  <CriteriaTable criteria={d.criteria} caption={`${d.primaryKeyword}的评估维度`} />
+  <Content />
+  {showList ? (
+    <ProviderList providers={matched} topic={d.primaryKeyword} />
+  ) : (
+    <ProviderListPending topic={d.primaryKeyword} />
+  )}
+</ArticleLayout>

@@ -1,0 +1,105 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import Checklist from '@components/Checklist.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const entries = await getPublished('articles');
+const cards = entries.map(toCard).filter((c) => c.category === '选择指南');
+
+const faq = [
+  {
+    q: '第一次买,直接选最便宜的可以吗?',
+    a: '不建议只看价格。过低的价格往往意味着超卖或跑路风险。更稳妥的做法是:确定预算区间后,优先选择运营时间较长、信息透明、支持月付试错的服务,先短周期体验再决定是否长期使用。',
+  },
+  {
+    q: '要不要一次买一年?',
+    a: '除非你已经使用某个服务超过三个月且体验稳定,否则不建议长周期预付。这类服务没有监管保障,预付越多风险越高。月付或季付的溢价,本质上是在为退出的灵活性付费。',
+  },
+  {
+    q: '这个网站会直接告诉我买哪家吗?',
+    a: '我们提供判断标准、服务档案和对比信息,并明确标注数据状态和推广关系,但最终决定由你做出。任何把「绝对最好」挂在嘴边的推荐,都值得警惕。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(cards.map((c) => ({ name: c.title, url: c.href }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="代理服务选择指南：按预算、设备和场景挑选机场"
+  description="系统的机场选择方法:先定用途、流量与设备数三个前提,再看线路类型、付费周期、运营透明度与客户端兼容。给出可自己套用的判断标准和取舍顺序,而不是一份让你照抄的排行榜。"
+  path="/choose/"
+  h1="选择指南"
+  lead="选服务不是抽奖。把预算、设备数量和主要用途想清楚,再对照参数逐项判断,大部分坑在下单前就能避开。"
+  directAnswer="选服务前先回答三个问题:主要用来做什么(决定对节点的硬性要求)、每月大概用多少流量(决定套餐档位)、有几台设备同时在线(决定设备数需求)。这三项定下来后可选范围通常只剩少数几个档位,再按线路类型和运营透明度做最后取舍。"
+  extraJsonLd={jsonLd}
+>
+  <section class="section">
+    <h2>选择前的自查清单</h2>
+    <Checklist
+      items={[
+        '明确主要用途:AI 工具、流媒体、办公还是日常浏览',
+        '数一数需要同时在线的设备数量',
+        '估算每月流量:参考「一个人需要多少流量」一文',
+        '设定月度预算区间,并预留试错成本',
+        '确认自己能接受的付费周期(优先短周期)',
+      ]}
+    />
+    <p>
+      完成自查后,按 <a href="/guides/first-time-airport-params/">第一次选择机场应该看哪些参数</a>
+      逐项对照,再到 <a href="/directory/">服务导航</a> 查看具体服务档案。
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>选择指南文章</h2>
+    <div class="grid grid-2">
+      {cards.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>按方向深入</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/airport/">
+        <h3>机场推荐与选择</h3>
+        <p>机场类服务的整体选择框架与参考。</p>
+      </a>
+      <a class="card" href="/stable/">
+        <h3>稳定性优先</h3>
+        <p>如何判断一个服务是否真的稳定。</p>
+      </a>
+      <a class="card" href="/value/">
+        <h3>性价比优先</h3>
+        <p>低预算下怎么选到能用的套餐。</p>
+      </a>
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/risk/">
+        <h3>风险与避坑</h3>
+        <p>下单前先了解跑路信号和付款安全。</p>
+      </a>
+      <a class="card" href="/compare/">
+        <h3>服务对比</h3>
+        <p>拿不定主意时,看结构化的对比分析。</p>
+      </a>
+      <a class="card" href="/scenarios/">
+        <h3>使用场景</h3>
+        <p>从用途出发反推服务要求。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

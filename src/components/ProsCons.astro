@@ -1,0 +1,54 @@
+---
+/** 优点与局限对照 */
+interface Props {
+  pros: string[];
+  cons: string[];
+  prosTitle?: string;
+  consTitle?: string;
+}
+
+const { pros, cons, prosTitle = '主要优势', consTitle = '主要限制' } = Astro.props;
+---
+
+<div class="pros-cons grid grid-2">
+  <div class="pc-col pc-pros">
+    <p class="pc-title">{prosTitle}</p>
+    <ul>
+      {pros.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+  <div class="pc-col pc-cons">
+    <p class="pc-title">{consTitle}</p>
+    <ul>
+      {cons.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .pc-col {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+  }
+  .pc-pros {
+    border-top: 3px solid var(--color-success);
+  }
+  .pc-cons {
+    border-top: 3px solid var(--color-warning);
+  }
+  .pc-title {
+    font-weight: 700;
+    color: var(--color-heading);
+    margin-bottom: var(--space-2);
+  }
+  .pc-col ul {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .pc-col li {
+    margin-bottom: var(--space-2);
+    line-height: var(--leading-normal);
+    font-size: var(--text-sm);
+  }
+</style>

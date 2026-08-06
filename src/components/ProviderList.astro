@@ -1,0 +1,249 @@
+---
+/**
+ * 专题页的服务名单。按 topics 字段自动匹配,不在页面里硬编码服务名。
+ *
+ * 展示原则:
+ * - 只展示可核对的结构化信息(套餐、价格、客户端、线路),不复述宣传话术
+ * - 数据状态徽章始终可见,reference 表示信息来自官方页面而非本站实测
+ * - 推广链接统一 rel="nofollow sponsored"
+ */
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '@lib/site';
+import DataStatusBadge from './DataStatusBadge.astro';
+import ProviderStatus from './ProviderStatus.astro';
+import AffiliateDisclosure from './AffiliateDisclosure.astro';
+
+interface Props {
+  providers: CollectionEntry<'providers'>[];
+  topic: string;
+  title?: string;
+}
+
+const { providers, topic, title } = Astro.props;
+
+/**
+ * 排序:设有 promotedRank 的合作服务在前(按 rank 升序),其余按名称排列。
+ * 这是商业排序,不是质量排序 —— 组件顶部的说明会如实告知读者这一点。
+ */
+const sorted = [...providers].sort((a, b) => {
+  const ra = a.data.promotedRank ?? Number.POSITIVE_INFINITY;
+  const rb = b.data.promotedRank ?? Number.POSITIVE_INFINITY;
+  if (ra !== rb) return ra - rb;
+  return a.data.name.localeCompare(b.data.name, 'zh-CN');
+});
+
+const hasPromoted = sorted.some((p) => p.data.promotedRank !== undefined);
+
+/** 取最低价档作为起步价展示 */
+function entryPrice(p: CollectionEntry<'providers'>): string {
+  const monthly = p.data.pricing.filter((x) => x.price.includes('/ 月'));
+  const pool = monthly.length > 0 ? monthly : p.data.pricing;
+  if (pool.length === 0) return '—';
+  const parsed = pool
+    .map((x) => ({ raw: x.price, num: Number.parseFloat(x.price.replace(/[^\d.]/g, '')) }))
+    .filter((x) => Number.isFinite(x.num))
+    .sort((a, b) => a.num - b.num);
+  return parsed[0]?.raw ?? pool[0]!.price;
+}
+---
+
+{providers.length > 0 && (
+  <section class="provider-list" aria-labelledby="plist-title">
+    <h2 id="plist-title">{title ?? `${topic}相关服务`}</h2>
+
+    <div class="notice notice-info">
+      <span class="notice-title">这份名单是怎么排的</span>
+      <p>
+        以下服务的套餐、价格与功能说明整理自各自官方页面,<strong>本站尚未独立实测</strong>,因此数据状态标注为「参考信息」。
+      </p>
+      {hasPromoted ? (
+        <p>
+          <strong>排序说明:</strong>标有「合作推荐」的服务与本站存在推广合作,在名单中优先展示。
+          <strong>这个次序反映的是合作关系,不是测评结论</strong>——它不代表这些服务比后面的更快、更稳或更适合你。
+          其余服务按名称排列。本站不发布按质量排名的榜单,理由见<a href="/airport/ranking/">机场排行榜怎么看</a>。
+        </p>
+      ) : (
+        <p>
+          名单按服务名排列,不代表推荐次序——本站不发布名次榜,理由见<a href="/airport/ranking/">机场排行榜怎么看</a>。
+        </p>
+      )}
+      <p>购买前请用本页上半部分的判断标准自行验证,不要仅凭排列位置决定。</p>
+    </div>
+
+    <AffiliateDisclosure />
+
+    <ul class="pl-items">
+      {sorted.map((p) => (
+        <li class={`pl-item ${p.data.promotedRank !== undefined ? 'pl-promoted' : ''}`}>
+          <div class="pl-head">
+            <h3><a href={`/directory/${p.id}/`}>{p.data.name}</a></h3>
+            <div class="pl-badges">
+              {p.data.promotedRank !== undefined && (
+                <span class="badge badge-promo" title="与本站存在推广合作,因此排在前面。这不是测评结论。">合作推荐</span>
+              )}
+              <ProviderStatus status={p.data.status} />
+              <DataStatusBadge status={p.data.dataStatus} />
+            </div>
+          </div>
+
+          {p.data.positioning && <p class="pl-positioning">{p.data.positioning}</p>}
+
+          <dl class="pl-meta">
+            <dt>起步价</dt>
+            <dd>{entryPrice(p)}</dd>
+            {p.data.lineTypes.length > 0 && (
+              <>
+                <dt>线路类型</dt>
+                <dd>{p.data.lineTypes.join('、')}</dd>
+              </>
+            )}
+            {p.data.protocols.length > 0 && (
+              <>
+                <dt>协议</dt>
+                <dd>{p.data.protocols.join('、')}</dd>
+              </>
+            )}
+            {p.data.clients.length > 0 && (
+              <>
+                <dt>客户端</dt>
+                <dd>{p.data.clients.join('、')}</dd>
+              </>
+            )}
+            {p.data.nodeRegions.length > 0 && (
+              <>
+                <dt>节点地区</dt>
+                <dd>{p.data.nodeRegions.join('、')}</dd>
+              </>
+            )}
+            {p.data.speedTest && (
+              <>
+                <dt>本站实测</dt>
+                <dd>
+                  {p.data.speedTest.nodeCount} 个节点,
+                  {p.data.speedTest.regions[0] &&
+                    `${p.data.speedTest.regions[0].name} ${p.data.speedTest.regions[0].speed}`}
+                  (测于 {formatDate(p.data.speedTest.testedAt)})
+                </dd>
+              </>
+            )}
+            <dt>信息更新</dt>
+            <dd>{formatDate(p.data.updatedAt)}</dd>
+          </dl>
+
+          {p.data.limitations.length > 0 && (
+            <p class="pl-limit">
+              <strong>需要留意:</strong>{p.data.limitations[0]}
+            </p>
+          )}
+
+          <div class="pl-actions">
+            <a class="btn btn-secondary" href={`/directory/${p.id}/`}>查看完整档案</a>
+            {p.data.affiliateUrl && (
+              <a
+                class="btn btn-primary"
+                href={p.data.affiliateUrl}
+                rel="nofollow sponsored noopener"
+                target="_blank"
+              >
+                前往官网
+              </a>
+            )}
+            {p.data.coupon && (
+              <span class="pl-coupon">
+                {p.data.coupon.name}:<code>{p.data.coupon.code}</code>
+              </span>
+            )}
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <p class="pl-footnote">
+      价格与套餐以各服务官方页面的实时信息为准。优惠码由服务方提供,本站不保证时效,请在结算页确认实际抵扣金额后再付款。
+    </p>
+  </section>
+)}
+
+<style>
+  .pl-items {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-4);
+    display: grid;
+    gap: var(--space-4);
+  }
+  .pl-item {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-4) var(--space-5);
+  }
+  /* 合作推荐位:视觉上与普通条目可区分,但不做成「更好」的暗示 */
+  .pl-promoted {
+    border-color: var(--color-brand);
+    background: var(--color-brand-soft);
+  }
+  .pl-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .pl-head h3 {
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+  .pl-badges {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+  .pl-positioning {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-3);
+  }
+  .pl-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-4);
+    font-size: var(--text-sm);
+    margin: 0 0 var(--space-3);
+  }
+  .pl-meta dt {
+    font-weight: 600;
+    color: var(--color-heading);
+    white-space: nowrap;
+  }
+  .pl-meta dd {
+    margin: 0;
+  }
+  .pl-limit {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    border-left: 3px solid var(--color-warning);
+    padding-left: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .pl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .pl-coupon {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .pl-footnote {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  @media (max-width: 600px) {
+    .pl-actions .btn {
+      flex: 1 1 auto;
+      text-align: center;
+    }
+  }
+</style>

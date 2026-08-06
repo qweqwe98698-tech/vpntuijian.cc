@@ -1,0 +1,28 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+---
+
+<SectionLayout
+  title="联系方式"
+  description="向本站反馈内容错误、数据过期或链接失效,提出选题建议,或就服务档案信息提出更正。我们优先处理可核实的事实性错误,收到有效反馈后会更新对应页面并刷新核验日期。"
+  path="/contact/"
+  h1="联系方式"
+  lead="内容纠错、选题建议或其他事项,欢迎联系。"
+  isCollection={false}
+>
+  <div class="prose section">
+    <h2>反馈渠道</h2>
+    <p>
+      本站暂未开通站内表单。你可以发送邮件至
+      <strong>contact@vpntuijian.cc</strong>(域名邮箱启用前,该地址可能暂不可达;届时本页会更新为可用渠道)。
+    </p>
+
+    <h2>反馈内容错误时</h2>
+    <p>为了更快处理,请尽量附上:出问题的页面链接、错误的具体位置、你认为正确的信息及依据。确认属实的错误会按<a href="/editorial-policy/">编辑规范</a>的修正流程处理。</p>
+
+    <h2>商务合作</h2>
+    <p>
+      推广合作请先阅读<a href="/disclosure/">推广披露</a>与<a href="/editorial-policy/">编辑规范</a>:合作不改变内容结论,不影响风险提示的撰写。接受这两项前提的合作方再来信洽谈。
+    </p>
+  </div>
+</SectionLayout>

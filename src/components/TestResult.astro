@@ -1,0 +1,51 @@
+---
+/** 测试结果模块(带数据状态,数据可整体替换) */
+import ResponsiveTable from './ResponsiveTable.astro';
+import DataStatusBadge from './DataStatusBadge.astro';
+
+interface Props {
+  title?: string;
+  dataStatus: string;
+  columns: string[];
+  rows: string[][];
+}
+
+const { title = '测试结果', dataStatus, columns, rows } = Astro.props;
+---
+
+{rows.length > 0 && (
+  <section class="test-result">
+    <div class="tr-head">
+      <h3>{title}</h3>
+      <DataStatusBadge status={dataStatus} />
+    </div>
+    <ResponsiveTable label={title}>
+      <table>
+        <thead>
+          <tr>
+            {columns.map((c) => <th scope="col">{c}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              {row.map((cell, i) => (i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </ResponsiveTable>
+  </section>
+)}
+
+<style>
+  .tr-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+  .tr-head h3 {
+    margin: 0;
+  }
+</style>

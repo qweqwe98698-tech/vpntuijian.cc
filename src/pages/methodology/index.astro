@@ -1,0 +1,80 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ResponsiveTable from '@components/ResponsiveTable.astro';
+---
+
+<SectionLayout
+  title="测试方法：本站信息的核验方式与局限"
+  description="本站信息如何产生与核验:测速使用的工具、网络环境与线程数,数据状态标识(已核实/参考信息/等待更新)各代表什么,更新与复测机制,以及这套方法本身无法覆盖的部分。"
+  path="/methodology/"
+  h1="测试方法"
+  lead="透明比全面更重要。这一页说明我们的信息从哪里来、核实到什么程度、多久更新一次,以及哪些事情我们做不到。"
+  isCollection={false}
+>
+  <div class="prose section">
+    <h2>数据状态标识</h2>
+    <p>全站所有服务数据模块都带有以下状态之一:</p>
+  </div>
+  <ResponsiveTable label="数据状态说明">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">标识</th>
+          <th scope="col">含义</th>
+          <th scope="col">可信程度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">已核实</th>
+          <td>编辑在标注日期核对过官方页面或实际使用验证</td>
+          <td>以核验日期为准,时间越近越可靠</td>
+        </tr>
+        <tr>
+          <th scope="row">参考信息</th>
+          <td>来自公开资料整理,未逐项验证</td>
+          <td>用于初步了解,决策前请自行确认</td>
+        </tr>
+        <tr>
+          <th scope="row">示例展示</th>
+          <td>用于展示页面结构的虚构内容,不对应真实服务</td>
+          <td>仅演示用途,页面同时设置 noindex</td>
+        </tr>
+        <tr>
+          <th scope="row">等待更新</th>
+          <td>档案已建立,关键信息待补充</td>
+          <td>暂不建议作为决策依据</td>
+        </tr>
+        <tr>
+          <th scope="row">需重新核验</th>
+          <td>距上次核验过久或服务发生已知变动</td>
+          <td>阅读时以官方最新信息为准</td>
+        </tr>
+      </tbody>
+    </table>
+  </ResponsiveTable>
+
+  <div class="prose section">
+    <h2>信息来源与核验流程</h2>
+    <ol>
+      <li>服务官方页面与公告渠道(套餐、价格、政策类信息的唯一核验来源);</li>
+      <li>编辑实际购买使用的体验记录(连接稳定性、客户端兼容性);</li>
+      <li>公开社区的长期口碑变化(仅作参考,不直接引用为结论)。</li>
+    </ol>
+    <p>
+      测速与体验类数据受设备、网络、地区、时间和线路状态影响明显,我们在相关模块统一注明测试环境;没有测试环境说明的数据一律视为参考信息。
+    </p>
+
+    <h2>更新机制</h2>
+    <ul>
+      <li>服务档案:发生已知变动时更新,并刷新核验日期;</li>
+      <li>教程:客户端界面发生明显变化时更新,并标注最后检查日期;</li>
+      <li>超过 180 天未更新的文章会自动显示时效提示。</li>
+    </ul>
+
+    <h2>方法的局限</h2>
+    <p>
+      我们无法做到:在所有地区和运营商网络下测试(体验结论存在环境偏差);实时跟踪服务状态(档案信息可能滞后于实际变动);验证服务商的内部承诺(如「不记录日志」类声明只能原样转述,无法核实)。遇到与你实际体验不符的信息,欢迎<a href="/contact/">反馈</a>。
+    </p>
+  </div>
+</SectionLayout>

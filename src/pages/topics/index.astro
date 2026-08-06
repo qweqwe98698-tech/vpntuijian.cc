@@ -1,0 +1,34 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import { primaryNav } from '@lib/site';
+
+const topics = [
+  ...primaryNav,
+  { label: '订阅管理', href: '/subscription/', description: '订阅链接的使用、更新与保护' },
+  { label: '实用指南', href: '/guides/', description: '全部指南文章索引' },
+  { label: '术语表', href: '/glossary/', description: '常用名词的一句话定义' },
+  { label: '机场推荐', href: '/airport/', description: '机场类内容总入口' },
+  { label: '稳定机场', href: '/stable/', description: '稳定性的判断方法' },
+  { label: '性价比机场', href: '/value/', description: '低预算选择思路' },
+];
+---
+
+<SectionLayout
+  title="内容主题总览：全站栏目与专题导航"
+  description="全站内容总览:新手入门、选购判断、按客户端与场景分类的选购专题、客户端配置教程、按症状分类的故障排查、线路与协议知识、风险避坑、术语表、服务档案与实测对比的全部入口。"
+  path="/topics/"
+  h1="内容主题总览"
+  lead="全站内容按主题组织。不确定从哪里开始时,这一页是完整地图。"
+  directAnswer="本页汇总全站的栏目与专题入口,便于快速定位内容:机场选购与判断标准、按客户端与场景分类的选购专题、客户端配置教程、按症状分类的故障排查、线路与协议知识、风险与避坑、术语表,以及服务档案与实测对比。"
+>
+  <section class="section">
+    <div class="grid grid-3">
+      {topics.map((t) => (
+        <a class="card" href={t.href}>
+          <h3>{t.label}</h3>
+          <p>{t.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</SectionLayout>

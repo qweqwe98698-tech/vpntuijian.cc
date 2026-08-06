@@ -1,0 +1,47 @@
+---
+/** 风险提醒区块 */
+interface Props {
+  items?: { title: string; href: string; description: string }[];
+}
+
+const {
+  items = [
+    {
+      title: '机场跑路前常见的风险信号',
+      href: '/guides/airport-runaway-warning-signs/',
+      description: '突然大促、客服失联、节点长期不修——识别这些信号可以减少损失。',
+    },
+    {
+      title: '购买代理服务的安全注意事项',
+      href: '/guides/payment-safety-guide/',
+      description: '付款方式、账号信息和订阅链接的基本安全习惯。',
+    },
+  ],
+} = Astro.props;
+---
+
+<section class="section" aria-labelledby="risk-title">
+  <div class="container">
+    <h2 class="section-title" id="risk-title">风险提醒</h2>
+    <p class="section-lead">这类服务没有监管保障,预付费越多风险越高。买之前花五分钟了解常见坑。</p>
+    <div class="grid grid-2">
+      {items.map((item) => (
+        <a class="card risk-card" href={item.href}>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </a>
+      ))}
+    </div>
+    <p class="risk-more"><a href="/risk/">进入风险与避坑中心 →</a></p>
+  </div>
+</section>
+
+<style>
+  .risk-card {
+    border-left: 3px solid var(--color-danger);
+  }
+  .risk-more {
+    margin-top: var(--space-4);
+    font-weight: 500;
+  }
+</style>

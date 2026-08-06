@@ -1,0 +1,149 @@
+---
+/** 服务档案完整展示(/directory/[slug]/ 页面主体) */
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '@lib/site';
+import DataStatusBadge from './DataStatusBadge.astro';
+import ProviderStatus from './ProviderStatus.astro';
+import PricingTable from './PricingTable.astro';
+import ClientSupport from './ClientSupport.astro';
+import LineTypeList from './LineTypeList.astro';
+import ProsCons from './ProsCons.astro';
+import SuitableFor from './SuitableFor.astro';
+import NotSuitableFor from './NotSuitableFor.astro';
+import RiskNotice from './RiskNotice.astro';
+import AffiliateDisclosure from './AffiliateDisclosure.astro';
+import SpeedTestReport from './SpeedTestReport.astro';
+
+interface Props {
+  provider: CollectionEntry<'providers'>;
+}
+
+const { provider } = Astro.props;
+const d = provider.data;
+---
+
+<article class="provider-profile">
+  <header class="pp-header">
+    <h1>{d.name}</h1>
+    <div class="meta-line">
+      <ProviderStatus status={d.status} />
+      <DataStatusBadge status={d.dataStatus} />
+      {d.verifiedAt && <span>信息核验于 {formatDate(d.verifiedAt)}</span>}
+      <span>档案更新于 {formatDate(d.updatedAt)}</span>
+    </div>
+    {d.aliases.length > 0 && <p class="pp-aliases">常用别名:{d.aliases.join('、')}</p>}
+    <p class="pp-summary">{d.summary}</p>
+  </header>
+
+  {d.disclosure && <AffiliateDisclosure text={d.disclosure} />}
+
+  {d.pricing.length > 0 && (
+    <section>
+      <h2>套餐概览</h2>
+      <PricingTable pricing={d.pricing} />
+      <p class="pp-note">
+        {d.billingCycle.length > 0 && <>计费周期:{d.billingCycle.join(' / ')}。</>}
+        {d.trafficPolicy && <>流量政策:{d.trafficPolicy}。</>}
+        价格与套餐以官方页面实时信息为准。
+      </p>
+    </section>
+  )}
+
+  <section>
+    <h2>设备与客户端</h2>
+    <ClientSupport platforms={d.platforms} clients={d.clients} />
+  </section>
+
+  <section>
+    <h2>节点与线路</h2>
+    <LineTypeList lineTypes={d.lineTypes} nodeRegions={d.nodeRegions} protocols={d.protocols} />
+  </section>
+
+  {d.speedTest && <SpeedTestReport test={d.speedTest} />}
+
+  {d.claims.length > 0 && (
+    <section>
+      <h2>服务方声明</h2>
+      <div class="notice">
+        <span class="notice-title">以下说法来自官方页面,本站未独立验证</span>
+        <ul>
+          {d.claims.map((c) => <li>{c}</li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {(d.strengths.length > 0 || d.limitations.length > 0) && (
+    <section>
+      <h2>优势与限制</h2>
+      <ProsCons pros={d.strengths} cons={d.limitations} />
+    </section>
+  )}
+
+  <section>
+    <h2>适合谁</h2>
+    <SuitableFor items={d.suitableFor} />
+    <NotSuitableFor items={d.notSuitableFor} />
+  </section>
+
+  {d.riskNotes.length > 0 && (
+    <section>
+      <h2>风险提示</h2>
+      <RiskNotice items={d.riskNotes} />
+    </section>
+  )}
+
+  <section>
+    <h2>售后与支持</h2>
+    <dl class="pp-support">
+      {d.supportChannels.length > 0 && (
+        <>
+          <dt>客服渠道</dt>
+          <dd>{d.supportChannels.join('、')}</dd>
+        </>
+      )}
+      {d.refundPolicy && (
+        <>
+          <dt>退款规则</dt>
+          <dd>{d.refundPolicy}</dd>
+        </>
+      )}
+    </dl>
+  </section>
+</article>
+
+<style>
+  .pp-header {
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-4);
+  }
+  .pp-aliases {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-1);
+  }
+  .pp-summary {
+    font-size: var(--text-lg);
+    color: var(--color-text);
+    margin: var(--space-2) 0 0;
+  }
+  .pp-note {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+  .pp-support {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+  }
+  .pp-support dt {
+    font-weight: 600;
+    color: var(--color-heading);
+  }
+  .pp-support dd {
+    margin: 0;
+  }
+</style>

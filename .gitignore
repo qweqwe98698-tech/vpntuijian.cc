@@ -1,0 +1,15 @@
+# build output
+dist/
+# generated types
+.astro/
+# dependencies
+node_modules/
+# logs
+npm-debug.log*
+# environment variables — 永远不要提交真实密钥
+.env
+.env.production
+.env.local
+# OS
+.DS_Store
+Thumbs.db

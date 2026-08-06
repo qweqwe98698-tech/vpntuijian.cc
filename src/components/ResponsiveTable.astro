@@ -1,0 +1,12 @@
+---
+/** 响应式表格容器:移动端横向滚动 */
+interface Props {
+  label?: string | undefined;
+}
+
+const { label } = Astro.props;
+---
+
+<div class="table-wrap" role="region" aria-label={label ?? '数据表格'} tabindex="0">
+  <slot />
+</div>

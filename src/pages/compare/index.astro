@@ -1,0 +1,74 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import AffiliateDisclosure from '@components/AffiliateDisclosure.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const cards = (await getPublished('comparisons')).map(toCard);
+
+const faq = [
+  {
+    q: '对比的维度是怎么定的?',
+    a: '每篇对比开头都会列出对比对象、对比日期和维度清单,维度覆盖价格、流量政策、线路类型、客户端支持和适合人群。数据状态与来源同样逐项标注。',
+  },
+  {
+    q: '对比结论多久更新一次?',
+    a: '服务的套餐和线路调整后,对应的对比会重新核验并更新对比日期。阅读时先看对比日期,超过半年的结论建议再到服务档案确认最新信息。',
+  },
+  {
+    q: '为什么不做「十大机场横评」这种大对比?',
+    a: '同时对比十个服务,每个维度都只能蜻蜓点水,结论反而没有参考价值。我们优先做两三个服务之间的深度对比,回答「这两家我该选哪家」这类具体问题。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(cards.map((c) => ({ name: c.title, url: c.href }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="机场服务对比：套餐、线路与客户端支持横向分析"
+  description="基于本站第一方实测的横向对比:九家服务在同一工具、同一网络与相同线程下的节点数、各地区速度与故障节点数。测试日期跨越四个月,因此按窗口分组比较,不拉成一张名次表。"
+  path="/compare/"
+  h1="服务对比"
+  lead="选择困难通常发生在最后两三个候选之间。对比文章把它们放到同一组维度下逐项比较,并说明结论的依据和适用条件。"
+  directAnswer="横向对比的前提是测试条件一致。本站九次测速使用同一工具、同一条宽带和同样 32 线程,但日期跨越近四个月,因此按测试窗口分组比较,不拉成一张名次表——把不同月份的数字并列成名次,等于把时间差伪装成质量差。"
+  extraJsonLd={jsonLd}
+>
+  <AffiliateDisclosure />
+
+  <section class="section">
+    <h2>全部对比</h2>
+    <p class="section-lead">
+      基于本站第一方实测数据的横向对比。测试使用同一工具与同一网络环境,测试条件与日期在文中逐项标注。
+    </p>
+    <div class="grid grid-2">
+      {cards.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/directory/">
+        <h3>服务导航</h3>
+        <p>对比中出现的服务的完整档案。</p>
+      </a>
+      <a class="card" href="/reviews/">
+        <h3>服务评测</h3>
+        <p>单个服务的深入分析。</p>
+      </a>
+      <a class="card" href="/choose/">
+        <h3>选择指南</h3>
+        <p>还没有候选?先建立选择框架。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

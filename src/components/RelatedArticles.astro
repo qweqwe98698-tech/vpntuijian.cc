@@ -1,0 +1,33 @@
+---
+/** 相关文章推荐 */
+interface Props {
+  items: { title: string; href: string; description?: string | undefined; category?: string | undefined }[];
+  title?: string;
+}
+
+const { items, title = '相关阅读' } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="related" aria-label={title}>
+    <h2>{title}</h2>
+    <div class="grid grid-2">
+      {items.map((item) => (
+        <a class="card" href={item.href}>
+          {item.category && <span class="badge">{item.category}</span>}
+          <h3>{item.title}</h3>
+          {item.description && <p>{item.description}</p>}
+        </a>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related .badge {
+    margin-bottom: var(--space-2);
+  }
+  .related h3 {
+    margin-top: var(--space-2);
+  }
+</style>

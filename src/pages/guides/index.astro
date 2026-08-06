@@ -1,0 +1,55 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema } from '@lib/schema';
+
+const cards = (await getPublished('articles')).map(toCard);
+const byCategory = new Map<string, typeof cards>();
+for (const c of cards) {
+  const list = byCategory.get(c.category) ?? [];
+  list.push(c);
+  byCategory.set(c.category, list);
+}
+
+const jsonLd = [itemListSchema(cards.map((c) => ({ name: c.title, url: c.href })))];
+---
+
+<SectionLayout
+  title="实用指南文章列表：选择、流量、套餐与风险"
+  description="选购方法与风险知识的文章合集:怎么读套餐参数、月付与年付如何取舍、一个月需要多少流量、多设备该怎么配、跑路前有哪些信号、付款与账号安全要注意什么。不针对具体品牌。"
+  path="/guides/"
+  h1="实用指南"
+  lead="按主题分组的全部指南文章。选择类文章帮你做决定,风险类文章帮你避免损失。"
+  directAnswer="这里是选购方法与风险知识的文章合集:怎么读套餐参数、月付与年付如何取舍、一个月大概需要多少流量、多设备该怎么选、跑路前有哪些信号、付款和账号安全要注意什么。这些内容不针对具体品牌,而是给出可以自己套用的判断标准。"
+  extraJsonLd={jsonLd}
+>
+  {[...byCategory.entries()].map(([category, list]) => (
+    <section class="section">
+      <h2>{category}</h2>
+      <div class="grid grid-2">
+        {list.map((c) => (
+          <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/choose/">
+        <h3>选择指南</h3>
+        <p>选购决策的完整框架与自查清单。</p>
+      </a>
+      <a class="card" href="/risk/">
+        <h3>风险与避坑</h3>
+        <p>损失场景速查与三条底线。</p>
+      </a>
+      <a class="card" href="/troubleshooting/">
+        <h3>故障排查</h3>
+        <p>使用中遇到问题的解决路径。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

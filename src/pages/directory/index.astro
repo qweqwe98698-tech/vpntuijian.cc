@@ -1,0 +1,100 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ProviderCard from '@components/ProviderCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import AffiliateDisclosure from '@components/AffiliateDisclosure.astro';
+import { getCollection } from 'astro:content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+// 合作服务按 promotedRank 排在前面,其余按名称。与名单组件同一套规则。
+const providers = (await getCollection('providers', ({ data }) => !data.draft)).sort((a, b) => {
+  const ra = a.data.promotedRank ?? Number.POSITIVE_INFINITY;
+  const rb = b.data.promotedRank ?? Number.POSITIVE_INFINITY;
+  if (ra !== rb) return ra - rb;
+  return a.data.name.localeCompare(b.data.name, 'zh');
+});
+
+const tested = providers.filter((p) => p.data.speedTest);
+const hasPromoted = providers.some((p) => p.data.promotedRank !== undefined);
+
+const faq = [
+  {
+    q: '服务档案的信息可靠吗?',
+    a: `每份档案都标注数据状态:「已核实」表示本站实测过节点与速度并核对了官方信息;「参考信息」来自公开资料但未实测;「等待更新」表示信息可能滞后。目前 ${tested.length} 家有第一方测速数据,测试条件与日期在各自页面上写明。`,
+  },
+  {
+    q: '目录里的服务是按什么排的?',
+    a: '标有「合作推荐」的服务与本站存在推广合作,排在前面;其余按名称排列。这个次序反映的是合作关系,不是测评结论——它不代表前面的服务更快或更稳。九家在同一工具下的实测数据对比见九家机场实测对比。',
+  },
+  {
+    q: '为什么目录里的服务这么少?',
+    a: '每份档案都要完成官方信息核对和实测才会上线,所以增长不快。宁可九份档案都有据可查,也不堆一份几十家但字段靠猜的名单。',
+  },
+  {
+    q: '档案里为什么不打分?',
+    a: '本站九次测速跨越近四个月,跨窗口的数字拼成分数或名次会把时间差伪装成质量差。我们改用「实测数据 + 适合谁 / 不适合谁 + 优势与限制」呈现,把判断权留给你。理由详见机场排行榜怎么看。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(providers.map((p) => ({ name: p.data.name, url: `/directory/${p.id}/` }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="网络代理服务导航：机场服务档案目录"
+  description="九家代理服务的结构化档案目录:套餐与价格、线路类型、节点地区、客户端支持、退款规则与风险提示,全部标注数据状态与核验日期,并附本站实测的节点数量与各地区速度区间。"
+  path="/directory/"
+  h1="服务导航"
+  lead="这里不是排行榜,是档案柜。每个服务一份结构化档案,标注信息核实到什么程度,方便你按自己的需求横向比较。"
+  directAnswer="服务档案用统一模板记录每家的套餐、线路类型、节点地区、客户端支持、退款规则与风险提示,并标注数据状态和核验日期。目前收录九家,全部有本站第一方测速数据。档案不打分也不排名次,因为服务质量随时间波动,固定分数很快失真。"
+  extraJsonLd={jsonLd}
+>
+  <AffiliateDisclosure />
+
+  <section class="section">
+    <h2>服务档案</h2>
+    <p class="section-lead">
+      当前收录 {providers.length} 家,其中 {tested.length} 家有本站第一方测速数据。
+      每份档案的套餐与线路整理自官方页面,节点数量与各地区速度由本站实测,数据状态和核验日期逐项标注。
+    </p>
+    {hasPromoted && (
+      <p class="dir-order">
+        标有「合作推荐」的服务与本站存在推广合作,排在前面。<strong>这个次序反映合作关系,不是测评结论</strong>,
+        不代表它们比后面的更快或更稳定。九家在同一工具下的横向实测见<a href="/compare/nine-providers-speed-test/">九家机场实测对比</a>。
+      </p>
+    )}
+    <div class="grid grid-3">
+      {providers.map((p) => <ProviderCard provider={p} />)}
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>怎么使用这些档案</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/guides/first-time-airport-params/">
+        <h3>先懂参数</h3>
+        <p>档案里每个字段的含义和判断方法。</p>
+      </a>
+      <a class="card" href="/compare/">
+        <h3>再看对比</h3>
+        <p>候选服务之间的结构化对比分析。</p>
+      </a>
+      <a class="card" href="/methodology/">
+        <h3>了解核验方式</h3>
+        <p>数据状态标识背后的核验流程。</p>
+      </a>
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+</SectionLayout>
+
+<style>
+  .dir-order {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    max-width: 60ch;
+  }
+</style>

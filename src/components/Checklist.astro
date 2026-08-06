@@ -1,0 +1,47 @@
+---
+/** 检查清单 */
+interface Props {
+  title?: string | undefined;
+  items: string[];
+}
+
+const { title, items } = Astro.props;
+---
+
+<div class="checklist">
+  {title && <p class="checklist-title">{title}</p>}
+  <ul>
+    {items.map((item) => (
+      <li>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m5 13 4 4L19 7" />
+        </svg>
+        <span>{item}</span>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .checklist-title {
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-bottom: var(--space-2);
+  }
+  .checklist ul {
+    list-style: none;
+    padding: 0;
+  }
+  .checklist li {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+    margin-bottom: var(--space-2);
+    line-height: var(--leading-normal);
+  }
+  .checklist svg {
+    color: var(--color-success);
+    flex-shrink: 0;
+    margin-top: 0.3em;
+  }
+</style>

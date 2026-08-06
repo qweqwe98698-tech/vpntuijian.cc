@@ -1,0 +1,24 @@
+---
+/** 栏目入口网格 */
+import { primaryNav } from '@lib/site';
+
+interface Props {
+  title?: string;
+}
+
+const { title = '内容栏目' } = Astro.props;
+---
+
+<section class="section" aria-labelledby="cat-title">
+  <div class="container">
+    <h2 class="section-title" id="cat-title">{title}</h2>
+    <div class="grid grid-4">
+      {primaryNav.map((item) => (
+        <a class="card" href={item.href}>
+          <h3>{item.label}</h3>
+          <p>{item.description}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

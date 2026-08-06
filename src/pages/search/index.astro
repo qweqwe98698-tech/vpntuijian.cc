@@ -1,0 +1,71 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import { primaryNav } from '@lib/site';
+
+// 搜索页:Pagefind 静态索引,页面本身 noindex
+---
+
+<SectionLayout
+  title="站内搜索"
+  description="搜索 VPN推荐指南的全部文章、教程、故障排查指南和服务档案。"
+  path="/search/"
+  h1="站内搜索"
+  lead="输入关键词搜索全站内容,支持中文标题与正文。"
+  noindex={true}
+  isCollection={false}
+>
+  <section class="section">
+    <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+    <script src="/pagefind/pagefind-ui.js" is:inline></script>
+    <div id="search"></div>
+    <script is:inline>
+      window.addEventListener('DOMContentLoaded', () => {
+        if (typeof PagefindUI !== 'undefined') {
+          new PagefindUI({
+            element: '#search',
+            showSubResults: true,
+            showImages: false,
+            translations: {
+              placeholder: '搜索文章、教程或故障关键词…',
+              zero_results: '没有找到与「[SEARCH_TERM]」相关的内容',
+              clear_search: '清除',
+              load_more: '加载更多结果',
+              search_label: '站内搜索',
+              searching: '正在搜索「[SEARCH_TERM]」…',
+            },
+          });
+        } else {
+          const el = document.getElementById('search');
+          if (el) {
+            el.innerHTML =
+              '<p>搜索索引尚未生成。本地开发时请先运行 <code>npm run build</code> 生成 Pagefind 索引,或使用 <code>npm run preview</code> 预览。</p>';
+          }
+        }
+      });
+    </script>
+  </section>
+
+  <section class="section">
+    <h2>没找到想要的?从栏目开始浏览</h2>
+    <div class="grid grid-4">
+      {primaryNav.slice(0, 8).map((item) => (
+        <a class="card" href={item.href}>
+          <h3>{item.label}</h3>
+          <p>{item.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</SectionLayout>
+
+<style is:global>
+  #search {
+    max-width: 44rem;
+    --pagefind-ui-primary: var(--color-brand);
+    --pagefind-ui-text: var(--color-text);
+    --pagefind-ui-background: var(--color-bg);
+    --pagefind-ui-border: var(--color-border);
+    --pagefind-ui-font: var(--font-sans);
+    --pagefind-ui-border-radius: var(--radius-sm);
+  }
+</style>

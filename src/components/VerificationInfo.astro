@@ -1,0 +1,65 @@
+---
+/** 已核实 / 待核实项目展示 */
+interface Props {
+  verifiedItems?: string[];
+  pendingItems?: string[];
+  verifiedAt?: Date | undefined;
+}
+
+const { verifiedItems = [], pendingItems = [], verifiedAt } = Astro.props;
+---
+
+{(verifiedItems.length > 0 || pendingItems.length > 0) && (
+  <div class="verification grid grid-2">
+    {verifiedItems.length > 0 && (
+      <div class="v-col">
+        <p class="v-title v-ok">
+          已核实项目
+          {verifiedAt && <span class="v-date">(核验于 {verifiedAt.toISOString().slice(0, 10)})</span>}
+        </p>
+        <ul>
+          {verifiedItems.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    )}
+    {pendingItems.length > 0 && (
+      <div class="v-col">
+        <p class="v-title v-pending">待核实项目</p>
+        <ul>
+          {pendingItems.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    )}
+  </div>
+)}
+
+<style>
+  .v-col {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+    font-size: var(--text-sm);
+  }
+  .v-title {
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+  }
+  .v-ok {
+    color: var(--color-success);
+  }
+  .v-pending {
+    color: var(--color-warning);
+  }
+  .v-date {
+    font-weight: 400;
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+  .v-col ul {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .v-col li {
+    margin-bottom: var(--space-1);
+  }
+</style>

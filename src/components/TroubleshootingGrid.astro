@@ -1,0 +1,39 @@
+---
+/** 热门故障排查入口 */
+import type { ArticleCard } from '@lib/content';
+
+interface Props {
+  items: ArticleCard[];
+  title?: string;
+}
+
+const { items, title = '热门故障排查' } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="section section-alt" aria-label={title}>
+    <div class="container">
+      <h2 class="section-title">{title}</h2>
+      <p class="section-lead">按现象找问题:先确认症状,再按顺序排查,大多数连接问题都有固定的检查路径。</p>
+      <div class="grid grid-4">
+        {items.map((item) => (
+          <a class="card ts-card" href={item.href}>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </a>
+        ))}
+      </div>
+      <p class="ts-more"><a href="/troubleshooting/">查看全部故障排查指南 →</a></p>
+    </div>
+  </section>
+)}
+
+<style>
+  .ts-card h3 {
+    font-size: var(--text-base);
+  }
+  .ts-more {
+    margin-top: var(--space-4);
+    font-weight: 500;
+  }
+</style>

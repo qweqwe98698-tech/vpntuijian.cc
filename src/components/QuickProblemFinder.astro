@@ -1,0 +1,26 @@
+---
+/** “你现在需要解决什么问题” 快速入口 */
+const entries = [
+  { label: '我还没有选好服务', desc: '按预算、设备和场景挑选合适的机场', href: '/choose/' },
+  { label: '我要配置客户端', desc: 'Clash、Shadowrocket、v2rayN、sing-box 教程', href: '/clients/' },
+  { label: '连不上了 / 节点超时', desc: '按现象逐步排查节点、订阅和网络问题', href: '/troubleshooting/' },
+  { label: '速度慢、看视频卡', desc: '判断是线路拥挤还是节点选择问题', href: '/troubleshooting/evening-peak-slow/' },
+  { label: '订阅无法更新', desc: '订阅链接失效、导入失败的处理方法', href: '/troubleshooting/subscription-update-failed/' },
+  { label: '担心跑路和安全', desc: '识别风险信号,付款前先看避坑清单', href: '/risk/' },
+];
+---
+
+<section class="section" aria-labelledby="qpf-title">
+  <div class="container">
+    <h2 class="section-title" id="qpf-title">你现在需要解决什么问题</h2>
+    <p class="section-lead">从实际问题出发,直接进入对应内容。</p>
+    <div class="grid grid-3">
+      {entries.map((e) => (
+        <a class="card" href={e.href}>
+          <h3>{e.label}</h3>
+          <p>{e.desc}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,158 @@
+---
+/**
+ * P9 泛流量词落地页:科学上网工具 / 梯子推荐 / 翻墙软件。
+ *
+ * 这类词搜索量大但意图很泛,竞争也高。本页定位为「工具与概念的总入口」,
+ * 主要作用是把泛流量分流到机场推荐、客户端教程和新手入门三条主线,
+ * 不与 /airport/ 争夺「机场推荐」主词。
+ */
+import SectionLayout from '@layouts/SectionLayout.astro';
+import FAQSection from '@components/FAQSection.astro';
+import ResponsiveTable from '@components/ResponsiveTable.astro';
+import DefinitionBox from '@components/DefinitionBox.astro';
+import WarningBox from '@components/WarningBox.astro';
+import { faqSchema } from '@lib/schema';
+
+const faq = [
+  {
+    q: '科学上网工具、梯子和机场是一回事吗?',
+    a: '不是同一层的东西。「机场」指卖节点订阅的服务商,「客户端」指 Clash、Shadowrocket 这类导入订阅的软件,而「梯子」「科学上网工具」是民间对这一整套组合的统称。要用起来,通常需要一个订阅加一个客户端,两者缺一不可。',
+  },
+  {
+    q: '新手应该先选机场还是先选客户端?',
+    a: '先确定设备,再选客户端,最后按客户端的兼容性选服务。因为客户端受设备限制最大(iOS 的选择就比 Windows 少),而多数服务能同时支持主流客户端。反过来先买服务再找客户端,容易遇到订阅格式不匹配。',
+  },
+  {
+    q: '科学上网工具可以免费使用吗?',
+    a: '有免费方案,但代价通常体现在别处:速度和稳定性差、节点随时失效、流量有限,更重要的是运营方的动机不透明——免费服务的成本需要有人承担。涉及账号登录的场景不建议使用来源不明的免费节点。',
+  },
+  {
+    q: '一个订阅可以导入多个客户端吗?',
+    a: '技术上可以,同一个订阅链接能在多台设备和多个客户端里导入。但要注意服务方的同时在线设备数限制,超出后可能被踢下线或限速。另外不同客户端支持的协议不同,同一订阅在不同客户端里可用节点数可能不一样。',
+  },
+  {
+    q: '同一个订阅为什么在不同客户端表现不同?',
+    a: '主要是协议支持差异和分流规则差异。有的客户端不支持订阅里的某些协议,那些节点会直接不显示或连不上;另外各客户端默认的分流规则集不同,同一个网站可能一个走代理一个走直连,表现自然不一样。',
+  },
+  {
+    q: '不同操作系统应该用什么客户端?',
+    a: 'Windows 常见的是 Clash 系客户端和 v2rayN;macOS 有 Clash 系和 Surge;Android 有 Clash for Android、v2rayNG、Hiddify 等;iOS 受限于 App Store,常见的是 Shadowrocket、Stash、Quantumult X。具体配置步骤见客户端教程栏目。',
+  },
+];
+
+const jsonLd = [faqSchema(faq)!];
+---
+
+<SectionLayout
+  title="科学上网工具与梯子软件:概念、选择与配置入口"
+  description="科学上网工具、梯子软件和机场的关系说明:各自指什么、新手该按什么顺序选、不同设备对应哪些客户端,以及从这里进入选购与配置教程。"
+  path="/tools/"
+  h1="科学上网工具与梯子软件怎么选"
+  lead="「科学上网工具」「梯子」「翻墙软件」在中文语境里经常混用,指的其实是不同层的东西。这一页先把概念理清,再把你分流到对应的选购和配置内容。"
+  directAnswer="「科学上网工具」「梯子」通常指的是一整套方案,而不是某个单一产品。它由两部分组成:提供节点的订阅服务(俗称机场,通常付费)和在设备上导入订阅的客户端软件(多数免费)。买了订阅还需要装客户端,装了客户端也不会自带节点,两者缺一不可。"
+  extraJsonLd={jsonLd}
+>
+  <DefinitionBox
+    term="科学上网工具"
+    definition="民间对网络代理整套方案的统称,通常包含两个部分:提供节点的订阅服务(俗称机场),以及在设备上导入订阅并接管流量的客户端软件。"
+    glossaryHref="/glossary/airport/"
+  />
+
+  <section class="section">
+    <h2>三个词各指什么</h2>
+    <p>
+      混淆这三个概念,是新手买错东西的主要原因。买了订阅却不知道要装客户端,或者装了客户端却以为它自带节点,都很常见。
+    </p>
+    <ResponsiveTable label="概念对照">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">说法</th>
+            <th scope="col">实际指什么</th>
+            <th scope="col">是否需要付费</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">机场</th>
+            <td>提供节点订阅的服务商,交付物是一条<a href="/glossary/subscription-link/">订阅链接</a></td>
+            <td>通常付费</td>
+          </tr>
+          <tr>
+            <th scope="row">客户端</th>
+            <td>导入订阅、接管系统流量的软件,如 <a href="/glossary/clash/">Clash</a>、Shadowrocket</td>
+            <td>多数免费,少数买断</td>
+          </tr>
+          <tr>
+            <th scope="row">梯子 / 科学上网工具</th>
+            <td>对上面两者组合起来这一整套方案的统称,不是某个具体产品</td>
+            <td>取决于所用服务</td>
+          </tr>
+        </tbody>
+      </table>
+    </ResponsiveTable>
+  </section>
+
+  <section class="section">
+    <h2>按这个顺序走不容易买错</h2>
+    <ol>
+      <li>
+        <strong>先确定设备。</strong>设备决定了客户端的可选范围,iOS 的限制比桌面系统大得多。
+      </li>
+      <li>
+        <strong>再选客户端。</strong>参考<a href="/clients/">客户端教程</a>,先确认你的设备上装什么、支持哪些协议。
+      </li>
+      <li>
+        <strong>最后按兼容性选服务。</strong>确认服务方提供你所用客户端的订阅格式,详见<a href="/airport/">机场推荐</a>下的各客户端专题。
+      </li>
+      <li>
+        <strong>只买最低档月付试一个月。</strong>理由见<a href="/guides/plan-billing-cycle-guide/">套餐周期怎么选</a>。
+      </li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <h2>关于免费方案</h2>
+    <WarningBox title="免费节点的实际代价">
+      <p>
+        网上流传的免费节点和来源不明的「一键工具」有几个共同问题:节点随时失效、速度不可预期、更重要的是你无法知道流量经过了谁的服务器。
+        涉及账号登录、支付或工作资料的场景,不建议使用这类节点。相关的安全考量见<a href="/guides/payment-safety-guide/">购买与使用的安全注意事项</a>。
+      </p>
+    </WarningBox>
+    <p>
+      客户端软件本身是另一回事——主流客户端多为开源或有明确来源,从官方渠道下载即可,不需要付费。要避免的是第三方下载站的「修改版」「破解版」。
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>从这里继续</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/start/">
+        <h3>新手入门</h3>
+        <p>从零开始:概念、选购、配置到排查的完整路径。</p>
+      </a>
+      <a class="card" href="/airport/">
+        <h3>机场推荐</h3>
+        <p>按客户端、场景、线路和价格分类的选购专题。</p>
+      </a>
+      <a class="card" href="/clients/">
+        <h3>客户端教程</h3>
+        <p>八个主流客户端的安装、订阅导入与模式设置。</p>
+      </a>
+      <a class="card" href="/troubleshooting/">
+        <h3>故障排查</h3>
+        <p>按现象定位:节点超时、订阅失败、连上却没网。</p>
+      </a>
+      <a class="card" href="/glossary/">
+        <h3>术语表</h3>
+        <p>节点、订阅、倍率、专线这些词各是什么意思。</p>
+      </a>
+      <a class="card" href="/risk/">
+        <h3>风险与避坑</h3>
+        <p>跑路信号、付款安全与虚假宣传的识别方法。</p>
+      </a>
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+</SectionLayout>

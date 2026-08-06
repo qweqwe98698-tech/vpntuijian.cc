@@ -1,0 +1,61 @@
+---
+/** 作者信息卡片 */
+interface Props {
+  name: string;
+  role: string;
+  bio: string;
+  expertise?: string[];
+  heading?: string;
+}
+
+const { name, role, bio, expertise = [], heading = '关于作者' } = Astro.props;
+---
+
+<aside class="author-card" aria-label={heading}>
+  <p class="author-heading">{heading}</p>
+  <p class="author-name">{name} <span class="author-role">· {role}</span></p>
+  <p class="author-bio">{bio}</p>
+  {expertise.length > 0 && (
+    <p class="author-tags">
+      {expertise.map((tag) => <span class="badge">{tag}</span>)}
+    </p>
+  )}
+</aside>
+
+<style>
+  .author-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-bg-soft);
+    font-size: var(--text-sm);
+  }
+  .author-heading {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted);
+    margin-bottom: var(--space-2);
+  }
+  .author-name {
+    font-weight: 700;
+    color: var(--color-heading);
+    font-size: var(--text-base);
+    margin-bottom: var(--space-2);
+  }
+  .author-role {
+    font-weight: 400;
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+  .author-bio {
+    line-height: var(--leading-normal);
+    margin-bottom: var(--space-2);
+  }
+  .author-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+  }
+</style>

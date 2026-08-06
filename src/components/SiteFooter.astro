@@ -1,0 +1,109 @@
+---
+/** 全站页脚 */
+import { SITE, footerNav } from '@lib/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <p class="footer-name">{SITE.name}</p>
+        <p class="footer-tagline">{SITE.tagline}</p>
+        <p class="footer-note">
+          本站为中文网络代理服务知识博客,内容用于教育与参考,不构成对任何服务的担保。请遵守所在地法律法规。
+        </p>
+      </div>
+      {footerNav.map((group) => (
+        <nav class="footer-col" aria-label={group.title}>
+          <p class="footer-title">{group.title}</p>
+          <ul>
+            {group.items.map((item) => (
+              <li><a href={item.href}>{item.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      ))}
+    </div>
+    <div class="footer-bottom">
+      <p>© {year} {SITE.name}({SITE.englishName})</p>
+      <p>
+        <a href="/privacy/">隐私政策</a> · <a href="/terms/">使用条款</a> ·
+        <a href="/disclosure/">推广披露</a> · <a href="/rss.xml">RSS</a> ·
+        <a href="/sitemap-index.xml">Sitemap</a>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-soft);
+    margin-top: var(--space-10);
+    padding: var(--space-8) 0 var(--space-5);
+    font-size: var(--text-sm);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(4, 1fr);
+    gap: var(--space-6);
+  }
+  @media (max-width: 900px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .footer-name {
+    font-weight: 700;
+    color: var(--color-heading);
+    font-size: var(--text-base);
+    margin-bottom: var(--space-2);
+  }
+  .footer-tagline {
+    color: var(--color-brand);
+    margin-bottom: var(--space-3);
+  }
+  .footer-note {
+    color: var(--color-muted);
+    line-height: var(--leading-normal);
+  }
+  .footer-title {
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-bottom: var(--space-3);
+  }
+  .footer-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .footer-col li {
+    margin-bottom: var(--space-2);
+  }
+  .footer-col a {
+    color: var(--color-muted);
+  }
+  .footer-col a:hover {
+    color: var(--color-brand);
+  }
+  .footer-bottom {
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    color: var(--color-muted);
+  }
+  .footer-bottom p {
+    margin: 0;
+  }
+</style>

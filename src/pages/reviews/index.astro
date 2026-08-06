@@ -1,0 +1,163 @@
+---
+/**
+ * 服务评测索引。承接「机场评测 / 机场测评 / XX 怎么样」这类关键词。
+ *
+ * 架构说明:品牌评测的正文就是 /directory/<slug>/ 的服务档案页 —— 那里已包含
+ * 实测数据、优势与限制、适合与不适合、风险提示和品牌 FAQ。本页只做入口与方法说明,
+ * 不重复渲染档案内容,避免与档案页构成重复内容。
+ */
+import { getCollection } from 'astro:content';
+import SectionLayout from '@layouts/SectionLayout.astro';
+import FAQSection from '@components/FAQSection.astro';
+import AffiliateDisclosure from '@components/AffiliateDisclosure.astro';
+import ResponsiveTable from '@components/ResponsiveTable.astro';
+import DataStatusBadge from '@components/DataStatusBadge.astro';
+import { formatDate } from '@lib/site';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const providers = (
+  await getCollection('providers', ({ data }) => !data.draft && !data.noindex)
+).sort((a, b) => {
+  const ra = a.data.promotedRank ?? Number.POSITIVE_INFINITY;
+  const rb = b.data.promotedRank ?? Number.POSITIVE_INFINITY;
+  if (ra !== rb) return ra - rb;
+  return a.data.name.localeCompare(b.data.name, 'zh-CN');
+});
+
+const tested = providers.filter((p) => p.data.speedTest);
+const hasPromoted = providers.some((p) => p.data.promotedRank !== undefined);
+
+const faq = [
+  {
+    q: '这些评测的依据是什么?',
+    a: `每家的档案包含两部分:一是整理自官方页面的套餐、线路与客户端信息,二是本站用同一工具、同一网络实测的节点数量与各地区速度。目前 ${tested.length} 家有第一方实测数据,测试条件与日期在各自页面上都写明了。`,
+  },
+  {
+    q: '为什么评测不给分数或排名次?',
+    a: '服务质量随时间波动,固定分数很快失真;而本站九次测速跨越近四个月,跨窗口的数字拼成名次会把时间差伪装成质量差。我们改用「实测数据 + 优势与限制 + 适合谁」的结构化结论,判断依据比一个数字更耐用。',
+  },
+  {
+    q: '评测会因为推广关系说好话吗?',
+    a: '含推广链接的页面会明确披露,标有「合作推荐」的服务在列表中优先展示——这个次序反映合作关系,不是测评结论。编辑规范要求每份档案必须包含限制与风险段落,实测暴露的问题(故障节点、宣传与实测不符)一律照记。',
+  },
+  {
+    q: '实测数据能说明流媒体或 AI 工具能不能用吗?',
+    a: '不能。本站的测速只测吞吐和延迟,没有测试任何流媒体或 AI 平台的可用性。那些能力取决于出口 IP 的信誉和归属,与速度没有必然关系,需要用最低档月付自行验证。',
+  },
+  {
+    q: '为什么有的档案标注数据偏旧?',
+    a: '代理服务的节点与线路调整频繁,超过两个月的测速结果参考价值下降。档案页会自动计算测试距今天数,超过 60 天显示时效提示。看到该提示时,应以服务方最新页面为准。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(providers.map((p) => ({ name: p.data.name, url: `/directory/${p.id}/` }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="机场评测:九家服务的实测数据与选购结论"
+  description="九家机场服务的评测入口:每家的节点实测速度、套餐结构、优势与限制、故障节点数与风险提示。评测不打分也不排名次,而是给出实测数据加适合与不适合的结构化结论。"
+  path="/reviews/"
+  h1="机场评测与服务档案"
+  lead="每家服务的评测正文就是它的档案页:套餐与线路整理自官方页面,节点速度由本站实测,优势、限制与风险提示逐项列出。"
+  directAnswer="本站的服务评测正文就是各自的档案页:套餐与线路整理自官方页面,节点数量与各地区速度由本站用同一工具实测,优势、限制、故障节点数与风险提示逐项列出。评测不打分也不排名次,而是给出「实测数据 + 适合谁 + 不适合谁」的结构化结论。"
+  extraJsonLd={jsonLd}
+>
+  <AffiliateDisclosure />
+
+  <section class="section">
+    <h2>已收录的服务</h2>
+    {hasPromoted && (
+      <p class="rv-note">
+        标有「合作推荐」的服务与本站存在推广合作,在列表中优先展示。<strong>这个次序反映合作关系,不是测评结论。</strong>
+        其余按名称排列。
+      </p>
+    )}
+    <ResponsiveTable label="已收录服务一览">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">服务</th>
+            <th scope="col">实测节点数</th>
+            <th scope="col">香港节点速度</th>
+            <th scope="col">测试日期</th>
+            <th scope="col">数据状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          {providers.map((p) => {
+            const st = p.data.speedTest;
+            const hk = st?.regions.find((r) => r.name.startsWith('香港'));
+            return (
+              <tr>
+                <th scope="row">
+                  <a href={`/directory/${p.id}/`}>{p.data.name}</a>
+                  {p.data.promotedRank !== undefined && (
+                    <span class="badge badge-promo rv-badge">合作推荐</span>
+                  )}
+                </th>
+                <td>{st ? st.nodeCount : '—'}</td>
+                <td>{hk ? hk.speed : '—'}</td>
+                <td>{st ? formatDate(st.testedAt) : '—'}</td>
+                <td><DataStatusBadge status={p.data.dataStatus} /></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </ResponsiveTable>
+    <p class="rv-caveat">
+      速度数据来自珠海联通 9Gbps 线路、32 线程的单次测试,换成其他运营商或地区结果会不同。
+      测试日期跨越近四个月,不同窗口的数字不可直接比较——完整说明与分组对比见
+      <a href="/compare/nine-providers-speed-test/">九家机场实测对比</a>。
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>怎么读这些档案</h2>
+    <ol>
+      <li><strong>先看数据状态与测试日期。</strong>「已核实」表示本站实测过节点与速度;测试超过 60 天会显示时效提示。</li>
+      <li><strong>再看「服务方声明」区块。</strong>那里是官方页面的说法,本站未验证——流媒体解锁、无日志这类都在其中。</li>
+      <li><strong>然后看限制与风险提示。</strong>故障节点数量、宣传与实测不符的地方都记在这里。</li>
+      <li><strong>最后看适合与不适合。</strong>比总体评价更有用的,是这项服务在你的具体场景下成不成立。</li>
+    </ol>
+    <p>
+      测试方法与指标含义见<a href="/methodology/">测试方法</a>,编辑规则见<a href="/editorial-policy/">编辑规范</a>。
+      选购前建议先读<a href="/guides/first-time-airport-params/">第一次选择机场应该看哪些参数</a>。
+    </p>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/directory/">
+        <h3>服务导航</h3>
+        <p>按线路、客户端与地区筛选服务档案。</p>
+      </a>
+      <a class="card" href="/compare/">
+        <h3>服务对比</h3>
+        <p>九家在同一条件下的横向实测对比。</p>
+      </a>
+      <a class="card" href="/methodology/">
+        <h3>测试方法</h3>
+        <p>测速工具、网络条件与这套数据的局限。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>
+
+<style>
+  .rv-note,
+  .rv-caveat {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+  .rv-badge {
+    margin-left: var(--space-2);
+    font-weight: 400;
+  }
+</style>

@@ -1,0 +1,40 @@
+# VPN推荐指南 (VPN Tuijian Guide)
+
+> 面向中文用户的网络代理服务(机场)知识博客。内容覆盖服务选择、客户端配置、
+> 节点与订阅管理、连接故障排查、线路与协议知识,以及风险提示。
+> 站点定位是「选得明白,用得稳定,出问题能解决」,不做排行榜导航站。
+
+站点地址:https://vpntuijian.cc
+
+## 内容原则
+
+- 服务信息标注数据状态(已核实 / 参考信息 / 示例展示 / 等待更新 / 需重新核验)与核验日期。
+- 标注为「示例展示」的页面使用示例数据展示结构,不代表真实测试结果,默认不参与索引。
+- 不使用「绝对最好」「永远稳定」「100% 解锁」这类无法验证的表述。
+- 含推广关系的内容会明确标识,详见 /disclosure/。
+
+## 主要栏目
+
+- /start/ — 新手入门
+- /choose/ — 选择指南(按预算、设备与场景)
+- /clients/ — 客户端教程(Clash、Shadowrocket、v2rayN、sing-box)
+- /troubleshooting/ — 故障排查(按现象组织的排查流程)
+- /protocols/ — 线路与协议(IEPL、IPLC、Shadowsocks、Trojan、VLESS、Hysteria 2)
+- /scenarios/ — 使用场景(AI 工具、流媒体、远程办公)
+- /risk/ — 风险与避坑
+- /directory/ — 服务导航与服务档案
+- /reviews/ — 服务评测
+- /compare/ — 服务对比
+- /glossary/ — 术语表
+- /methodology/ — 测试方法
+- /editorial-policy/ — 编辑规范
+
+## 索引
+
+- 站点地图:https://vpntuijian.cc/sitemap-index.xml
+- RSS:https://vpntuijian.cc/rss.xml
+
+## 说明
+
+本文件用于向自动化工具说明站点结构与内容约定,不替代 robots.txt 与 sitemap.xml,
+也不构成搜索引擎收录或排名的承诺。

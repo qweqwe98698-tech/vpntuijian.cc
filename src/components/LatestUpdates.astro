@@ -1,0 +1,70 @@
+---
+/** 最新更新列表(紧凑行式) */
+import type { ArticleCard } from '@lib/content';
+import { formatDate } from '@lib/site';
+
+interface Props {
+  items: ArticleCard[];
+  title?: string;
+}
+
+const { items, title = '最新更新' } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="section" aria-label={title}>
+    <div class="container">
+      <h2 class="section-title">{title}</h2>
+      <ul class="latest-list">
+        {items.map((item) => (
+          <li>
+            <a href={item.href}>{item.title}</a>
+            <span class="latest-meta">
+              <span class="badge">{item.category}</span>
+              <time datetime={item.updatedAt.toISOString()}>{formatDate(item.updatedAt)}</time>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .latest-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 46rem;
+  }
+  .latest-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .latest-list a {
+    color: var(--color-heading);
+    font-weight: 500;
+    line-height: var(--leading-normal);
+  }
+  .latest-list a:hover {
+    color: var(--color-brand);
+  }
+  .latest-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-shrink: 0;
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+  @media (max-width: 600px) {
+    .latest-list li {
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+  }
+</style>

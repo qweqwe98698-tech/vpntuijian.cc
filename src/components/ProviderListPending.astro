@@ -1,0 +1,77 @@
+---
+/**
+ * 服务名单占位模块。
+ *
+ * 专题页的关键词意图包含「推荐哪几家」,但在没有可核实的真实服务数据之前,
+ * 这里不输出任何具体服务名。占位模块说明将会展示什么、按什么标准筛选、
+ * 以及在此之前读者可以怎么自己判断——而不是留一片空白或编造名单。
+ */
+interface Props {
+  /** 该专题的主题词,如「Clash 机场」 */
+  topic: string;
+  /** 该专题下服务名单会展示的字段 */
+  fields?: string[];
+}
+
+const {
+  topic,
+  fields = ['套餐与价格', '线路类型', '客户端支持', '节点地区', '信息核验日期'],
+} = Astro.props;
+---
+
+<section class="provider-pending" aria-labelledby="pending-title">
+  <h2 id="pending-title">{topic}服务名单</h2>
+  <div class="notice notice-warning">
+    <span class="notice-title">本站尚未发布该栏目的服务名单</span>
+    <p>
+      我们不发布未经核实的服务名单。{topic}的具体推荐位会在完成信息核验后上线,届时每一条都会标注核验日期和数据状态。
+    </p>
+  </div>
+
+  <p>名单上线后,每条服务档案会包含以下字段,便于横向比较:</p>
+  <ul class="pending-fields">
+    {fields.map((f) => <li>{f}</li>)}
+  </ul>
+
+  <p class="pending-alt">
+    在此之前,本页上半部分的判断标准同样可以直接用来评估你自己找到的服务。
+    评估流程见<a href="/methodology/">测试方法</a>,已建立的服务档案见<a href="/directory/">服务导航</a>,
+    购买前的风险核对见<a href="/risk/">风险与避坑</a>。
+  </p>
+</section>
+
+<style>
+  .provider-pending {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-5);
+    margin: var(--space-6) 0;
+    background: var(--color-bg-soft);
+  }
+  .provider-pending h2 {
+    margin-top: 0;
+    border: none;
+    padding: 0;
+  }
+  .pending-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-4);
+  }
+  .pending-fields li {
+    font-size: var(--text-xs);
+    padding: 0.3em 0.7em;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-bg);
+    color: var(--color-muted);
+  }
+  .pending-alt {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    margin-bottom: 0;
+  }
+</style>

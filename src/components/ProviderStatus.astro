@@ -1,0 +1,17 @@
+---
+/** 服务当前状态标识 */
+interface Props {
+  status: 'active' | 'unstable' | 'closed' | 'unknown';
+}
+
+const { status } = Astro.props;
+const map = {
+  active: { label: '运营中', cls: 'badge-ok' },
+  unstable: { label: '状态波动', cls: 'badge-warn' },
+  closed: { label: '已停止运营', cls: 'badge-danger' },
+  unknown: { label: '状态待确认', cls: '' },
+} as const;
+const info = map[status];
+---
+
+<span class={`badge ${info.cls}`}>{info.label}</span>

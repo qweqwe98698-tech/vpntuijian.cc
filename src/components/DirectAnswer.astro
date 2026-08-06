@@ -1,0 +1,19 @@
+---
+/** 页面开头的直接答案(80–160 字,GEO 可提取) */
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<div class="notice notice-info direct-answer">
+  <span class="notice-title">直接答案</span>
+  <p>{text}</p>
+</div>
+
+<style>
+  .direct-answer {
+    font-size: var(--text-base);
+  }
+</style>

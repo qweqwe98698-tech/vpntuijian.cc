@@ -1,0 +1,10 @@
+# 旧站(Vite+React SPA)URL 到新站的一对一栏目映射
+# 旧站路由模式:/review/:slug、/tutorial/:slug、/category/:keyword
+# 旧 slug 与新 slug 无法一一对应,按内容类型映射到对应栏目页(非首页)
+/review/*      /reviews/          301
+/tutorial/*    /clients/          301
+/category/*    /directory/        301
+
+# 常见别名路径
+/faq           /about/            301
+/faq/          /about/            301

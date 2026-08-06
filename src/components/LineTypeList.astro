@@ -1,0 +1,49 @@
+---
+/** 线路类型与节点地区展示 */
+interface Props {
+  lineTypes?: string[];
+  nodeRegions?: string[];
+  protocols?: string[];
+}
+
+const { lineTypes = [], nodeRegions = [], protocols = [] } = Astro.props;
+---
+
+<dl class="line-info">
+  {lineTypes.length > 0 && (
+    <>
+      <dt>线路类型</dt>
+      <dd>{lineTypes.join('、')}(线路说明见<a href="/protocols/">线路与协议</a>)</dd>
+    </>
+  )}
+  {nodeRegions.length > 0 && (
+    <>
+      <dt>节点地区</dt>
+      <dd>{nodeRegions.join('、')}</dd>
+    </>
+  )}
+  {protocols.length > 0 && (
+    <>
+      <dt>支持协议</dt>
+      <dd>{protocols.join('、')}</dd>
+    </>
+  )}
+</dl>
+
+<style>
+  .line-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-4);
+    margin: 0 0 var(--space-4);
+    font-size: var(--text-sm);
+  }
+  .line-info dt {
+    font-weight: 600;
+    color: var(--color-heading);
+    white-space: nowrap;
+  }
+  .line-info dd {
+    margin: 0;
+  }
+</style>

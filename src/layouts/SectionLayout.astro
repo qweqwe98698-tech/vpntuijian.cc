@@ -1,0 +1,64 @@
+---
+/** 栏目页 / 静态信息页统一布局:面包屑 + 页头 + 内容区 */
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs, { type Crumb } from '@components/Breadcrumbs.astro';
+import DirectAnswer from '@components/DirectAnswer.astro';
+import { breadcrumbSchema, collectionPageSchema } from '@lib/schema';
+
+interface Props {
+  /** SEO title(不含站名后缀时自动追加) */
+  title: string;
+  description: string;
+  path: string;
+  h1: string;
+  lead?: string;
+  /**
+   * 80–160 字直接答案。栏目页排的是头部词,也是生成式搜索最常引用的一层,
+   * 缺少可直接提取的结论会白白让出被引用的机会。
+   */
+  directAnswer?: string;
+  noindex?: boolean;
+  crumbs?: Crumb[];
+  /** 额外 JSON-LD(如 ItemList、FAQPage) */
+  extraJsonLd?: Record<string, unknown>[];
+  /** 是否输出 CollectionPage schema(栏目页 true,普通信息页 false) */
+  isCollection?: boolean;
+}
+
+const {
+  title,
+  description,
+  path,
+  h1,
+  lead,
+  directAnswer,
+  noindex = false,
+  crumbs: customCrumbs,
+  extraJsonLd = [],
+  isCollection = true,
+} = Astro.props;
+
+const crumbs: Crumb[] = customCrumbs ?? [
+  { name: '首页', href: '/' },
+  { name: h1, href: path },
+];
+
+const jsonLd: Record<string, unknown>[] = [breadcrumbSchema(crumbs), ...extraJsonLd];
+if (isCollection) {
+  jsonLd.unshift(collectionPageSchema({ title: h1, description, url: path }));
+}
+
+const fullTitle = title.includes('VPN推荐指南') ? title : `${title}｜VPN推荐指南`;
+---
+
+<BaseLayout title={fullTitle} description={description} path={path} noindex={noindex} jsonLd={jsonLd}>
+  <div class="container">
+    <Breadcrumbs items={crumbs} />
+    <header class="page-header">
+      <h1>{h1}</h1>
+      {lead && <p class="lead">{lead}</p>}
+    </header>
+    {directAnswer && <DirectAnswer text={directAnswer} />}
+    <slot />
+  </div>
+</BaseLayout>

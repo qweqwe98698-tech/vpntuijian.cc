@@ -1,0 +1,107 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import FAQSection from '@components/FAQSection.astro';
+import StepList from '@components/StepList.astro';
+import { faqSchema } from '@lib/schema';
+
+const faq = [
+  {
+    q: '完全零基础,大概要多久能用上?',
+    a: '从选好服务到完成客户端配置,通常在半小时以内。真正花时间的是选服务这一步——建议至少花一个晚上了解基本概念和风险,再做购买决定。',
+  },
+  {
+    q: '需要什么设备或技术基础吗?',
+    a: '会安装软件、会复制粘贴链接就够了。主流客户端都有图形界面,本站教程会把每一步的位置写清楚,遇到报错再按故障排查文章处理。',
+  },
+  {
+    q: '先学客户端还是先买服务?',
+    a: '先买一个支持月付的服务再学客户端。因为客户端没有订阅链接就无法真正工作,拿着真实订阅照着教程走一遍,比空看教程有效得多。',
+  },
+];
+
+const jsonLd = [faqSchema(faq)!];
+---
+
+<SectionLayout
+  title="新手入门：第一次使用网络代理服务的完整路径"
+  description="零基础入门路径:先搞清机场、节点、订阅与客户端各指什么,再按预算和设备确定需求并只买最低档月付,然后照教程导入订阅,最后掌握出问题时的排查顺序。约半小时走完全流程。"
+  path="/start/"
+  h1="新手入门"
+  lead="第一次接触这类工具,不需要懂技术,但需要按正确的顺序做事。这条路径帮你避开新手最常踩的坑:乱买年付、来路不明的客户端、连不上就干着急。"
+  directAnswer="第一次使用代理服务按四步走:先搞清机场、节点、订阅、客户端这几个词各指什么,再按预算和设备确定需求并只买最低档月付,然后照客户端教程导入订阅,最后了解出问题时按什么顺序排查。整个流程约需半小时,能避开新手最常见的损失。"
+  extraJsonLd={jsonLd}
+>
+  <section class="section">
+    <h2>四步入门路径</h2>
+    <StepList
+      steps={[
+        { name: '理解概念(10 分钟)', detail: '搞懂机场、订阅、节点、客户端这四个词的关系,见术语表' },
+        { name: '选择服务(1 个晚上)', detail: '按选择指南确定预算和参数,优先月付试错' },
+        { name: '配置客户端(30 分钟)', detail: '按你的设备选教程,导入订阅并测试连接' },
+        { name: '学会排查(遇到问题时)', detail: '连不上时按故障排查中心的顺序检查,别急着重装' },
+      ]}
+    />
+    <div class="grid grid-4 start-links">
+      <a class="card" href="/glossary/">
+        <h3>① 术语表</h3>
+        <p>机场、订阅链接、节点是什么意思。</p>
+      </a>
+      <a class="card" href="/choose/">
+        <h3>② 选择指南</h3>
+        <p>第一次买该看哪些参数。</p>
+      </a>
+      <a class="card" href="/clients/">
+        <h3>③ 客户端教程</h3>
+        <p>按设备完成安装与订阅导入。</p>
+      </a>
+      <a class="card" href="/troubleshooting/">
+        <h3>④ 故障排查</h3>
+        <p>出问题时的检查顺序。</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>新手最容易踩的三个坑</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>一上来就买年付</h3>
+        <p>没验证过服务质量就长周期预付,是新手损失最集中的场景。先月付,稳定使用三个月以上再考虑长周期。</p>
+      </div>
+      <div class="card">
+        <h3>从搜索广告下载客户端</h3>
+        <p>客户端只从官方渠道获取。第三方下载站和广告位的安装包存在被植入恶意代码的风险,详见<a href="/guides/payment-safety-guide/">安全注意事项</a>。</p>
+      </div>
+      <div class="card">
+        <h3>连不上就反复重装</h3>
+        <p>重装几乎不解决连接问题,还会丢配置。按<a href="/troubleshooting/all-nodes-timeout/">排查流程</a>逐步检查,五分钟通常能定位原因。</p>
+      </div>
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>下一步</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/risk/">
+        <h3>风险与避坑</h3>
+        <p>花五分钟了解这个行业的常见套路。</p>
+      </a>
+      <a class="card" href="/scenarios/">
+        <h3>使用场景</h3>
+        <p>按你的实际用途优化节点选择。</p>
+      </a>
+      <a class="card" href="/subscription/">
+        <h3>订阅管理</h3>
+        <p>订阅链接的使用和保护常识。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>
+
+<style>
+  .start-links {
+    margin-top: var(--space-5);
+  }
+</style>

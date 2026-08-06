@@ -1,0 +1,36 @@
+---
+/** 文章头部:H1 + 描述 + 元信息 */
+import ArticleMeta from './ArticleMeta.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  authorName: string;
+  reviewerName?: string | undefined;
+  publishedAt: Date;
+  updatedAt: Date;
+  reviewedAt?: Date | undefined;
+  dataStatus?: string | undefined;
+}
+
+const { title, description, ...meta } = Astro.props;
+---
+
+<header class="article-header">
+  <h1>{title}</h1>
+  <p class="lead">{description}</p>
+  <ArticleMeta {...meta} />
+</header>
+
+<style>
+  .article-header {
+    padding: var(--space-6) 0 var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-5);
+  }
+  .lead {
+    font-size: var(--text-lg);
+    color: var(--color-muted);
+    max-width: 64ch;
+  }
+</style>

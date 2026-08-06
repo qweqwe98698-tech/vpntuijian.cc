@@ -1,0 +1,36 @@
+---
+/** 客户端教程入口 */
+import type { ArticleCard } from '@lib/content';
+
+interface Props {
+  items: ArticleCard[];
+  title?: string;
+}
+
+const { items, title = '客户端教程' } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="section" aria-label={title}>
+    <div class="container">
+      <h2 class="section-title">{title}</h2>
+      <p class="section-lead">从订阅导入到模式选择,每个主流客户端一步一步讲清楚。</p>
+      <div class="grid grid-4">
+        {items.map((item) => (
+          <a class="card" href={item.href}>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </a>
+        ))}
+      </div>
+      <p class="cg-more"><a href="/clients/">查看全部客户端教程 →</a></p>
+    </div>
+  </section>
+)}
+
+<style>
+  .cg-more {
+    margin-top: var(--space-4);
+    font-weight: 500;
+  }
+</style>

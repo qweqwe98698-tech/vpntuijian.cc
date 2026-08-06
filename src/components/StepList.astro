@@ -1,0 +1,36 @@
+---
+/** 步骤列表(有序,可提取) */
+interface Props {
+  title?: string | undefined;
+  steps: { name: string; detail?: string | undefined }[];
+}
+
+const { title, steps } = Astro.props;
+---
+
+<div class="step-list">
+  {title && <p class="step-title">{title}</p>}
+  <ol>
+    {steps.map((step) => (
+      <li>
+        <strong>{step.name}</strong>
+        {step.detail && <span> —— {step.detail}</span>}
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .step-title {
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-bottom: var(--space-2);
+  }
+  .step-list ol {
+    padding-left: 1.4em;
+  }
+  .step-list li {
+    margin-bottom: var(--space-2);
+    line-height: var(--leading-normal);
+  }
+</style>

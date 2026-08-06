@@ -1,0 +1,36 @@
+---
+/** 支持的设备与客户端展示 */
+interface Props {
+  platforms?: string[];
+  clients?: string[];
+}
+
+const { platforms = [], clients = [] } = Astro.props;
+---
+
+{(platforms.length > 0 || clients.length > 0) && (
+  <div class="client-support">
+    {platforms.length > 0 && (
+      <p>
+        <strong>支持设备:</strong>
+        {platforms.map((p) => <span class="badge">{p}</span>)}
+      </p>
+    )}
+    {clients.length > 0 && (
+      <p>
+        <strong>支持客户端:</strong>
+        {clients.map((c) => <span class="badge badge-info">{c}</span>)}
+      </p>
+    )}
+  </div>
+)}
+
+<style>
+  .client-support p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+</style>

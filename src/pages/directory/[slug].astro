@@ -1,0 +1,75 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import ProviderProfile from '@components/ProviderProfile.astro';
+import FAQSection from '@components/FAQSection.astro';
+import RelatedArticles from '@components/RelatedArticles.astro';
+import { resolveRelated } from '@lib/content';
+import { breadcrumbSchema, faqSchema, articleSchema } from '@lib/schema';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('providers', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const path = `/directory/${entry.id}/`;
+const related = await resolveRelated(d.relatedArticles ?? []);
+
+const crumbs = [
+  { name: '首页', href: '/' },
+  { name: '服务导航', href: '/directory/' },
+  { name: d.name, href: path },
+];
+
+// 品牌页承接 P6 关键词簇。未设 seoTitle 时回退到通用标题,但会浪费品牌词流量。
+const title = d.seoTitle ? `${d.seoTitle}｜VPN推荐指南` : `${d.name} 服务档案｜VPN推荐指南`;
+const description = d.seoDescription ?? d.summary;
+
+const jsonLd: Record<string, unknown>[] = [breadcrumbSchema(crumbs)];
+
+// 有实测数据的档案输出 Article schema:此时页面已包含本站第一方测试结论,
+// 而不只是一份信息罗列。没有实测数据时不输出,避免夸大内容性质。
+if (d.speedTest) {
+  jsonLd.push(
+    articleSchema({
+      title: d.seoTitle ?? `${d.name} 服务档案`,
+      description,
+      url: path,
+      publishedAt: d.publishedAt,
+      updatedAt: d.updatedAt,
+      authorName: '麦恒',
+    })
+  );
+}
+
+const faqLd = faqSchema(d.faq ?? []);
+if (faqLd) jsonLd.push(faqLd);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  path={path}
+  noindex={d.noindex}
+  updatedAt={d.updatedAt}
+  jsonLd={jsonLd}
+>
+  <div class="container">
+    <Breadcrumbs items={crumbs} />
+    <div class="prose-wide">
+      <ProviderProfile provider={entry} />
+      <FAQSection faq={d.faq ?? []} title={`关于${d.name}的常见问题`} />
+      <RelatedArticles items={related} title="相关文章" />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .prose-wide {
+    max-width: 56rem;
+    padding-bottom: var(--space-8);
+  }
+</style>

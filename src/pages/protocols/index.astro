@@ -1,0 +1,83 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const entries = await getPublished('protocols');
+const cards = entries.map(toCard);
+
+const faq = [
+  {
+    q: '普通用户需要懂协议吗?',
+    a: '不需要深入,但了解基本区别有两个实际好处:一是看懂机场套餐页写的 IEPL、Trojan 是什么意思,判断价格是否合理;二是排查问题时能分清是协议被干扰还是自己配置错了。',
+  },
+  {
+    q: '哪种协议最好?',
+    a: '没有绝对最好的协议,只有适不适合当前网络环境。Shadowsocks 简单高效,Trojan 和 VLESS 伪装性更好,Hysteria 2 在弱网下表现突出。服务商通常会同时提供多种,可用性比协议名称更重要。',
+  },
+  {
+    q: 'IEPL 专线比普通线路好在哪?',
+    a: 'IEPL 是内网专线,不走公网,高峰期不容易拥堵,延迟波动小,但成本高,套餐价格也更贵。是否值得取决于你对稳定性的要求,详见 IEPL 与 IPLC 区别一文。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(cards.map((c) => ({ name: c.title, url: c.href }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="线路与协议知识中心：IEPL、IPLC、Shadowsocks、Trojan、VLESS"
+  description="用通俗语言解释代理线路与协议:IEPL 与 IPLC 的区别、直连中转专线怎么选、Shadowsocks、Trojan、VLESS 与 Hysteria 2 的差异和适用场景。"
+  path="/protocols/"
+  h1="线路与协议知识中心"
+  lead="线路决定数据走哪条路,协议决定数据怎么伪装。理解这两件事,你就能看懂套餐页上的所有名词,也能在排查问题时快速缩小范围。"
+  directAnswer="线路决定数据走哪条路,协议决定数据怎么包装。直连最便宜但高峰期最容易堵,中转在国内先接入再出境因而延迟更低,IEPL 与 IPLC 专线不与公网流量混跑所以波动最小、价格也最高。协议方面 Shadowsocks 轻量、Trojan 伪装成 HTTPS、VLESS 更灵活、Hysteria 2 在高丢包网络下表现更好。"
+  extraJsonLd={jsonLd}
+>
+  <section class="section">
+    <h2>先分清两个概念</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>线路(物理层面)</h3>
+        <p>数据从你的设备到目标服务器经过的路径:直连、中转、IEPL/IPLC 专线。线路质量决定延迟和高峰期稳定性,是机场定价的主要依据。</p>
+      </div>
+      <div class="card">
+        <h3>协议(软件层面)</h3>
+        <p>客户端与节点之间加密和伪装流量的方式:Shadowsocks、Trojan、VLESS、Hysteria 2 等。协议影响抗干扰能力和某些场景下的速度表现。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>全部知识文章</h2>
+    <div class="grid grid-2">
+      {cards.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/glossary/">
+        <h3>术语表</h3>
+        <p>每个协议和线路名词的一句话定义,方便快速查阅。</p>
+      </a>
+      <a class="card" href="/choose/">
+        <h3>选择指南</h3>
+        <p>把线路知识用在实际选购上:什么预算配什么线路。</p>
+      </a>
+      <a class="card" href="/troubleshooting/">
+        <h3>故障排查</h3>
+        <p>判断到底是协议被干扰、线路故障还是配置问题。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

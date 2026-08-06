@@ -1,0 +1,91 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import FAQSection from '@components/FAQSection.astro';
+import Checklist from '@components/Checklist.astro';
+import DefinitionBox from '@components/DefinitionBox.astro';
+import { faqSchema } from '@lib/schema';
+
+const faq = [
+  {
+    q: '订阅链接多久更新一次?',
+    a: '客户端一般支持自动更新,建议保持默认(每天或每次启动时)。服务商调整节点后,不更新订阅就会出现大量节点失效的假象——这是「所有节点超时」最常见的原因之一。',
+  },
+  {
+    q: '订阅链接可以分享给家人吗?',
+    a: '技术上可以,但订阅链接等同于账号使用权:对方的设备会占用你的同时在线额度,行为也算在你的账号上。多人使用应选择多设备套餐,而不是共享链接。',
+  },
+  {
+    q: '换客户端需要重新买订阅吗?',
+    a: '不需要。同一条订阅链接可以在不同客户端使用,部分服务商为不同客户端提供不同格式的订阅地址,在用户面板选择对应格式复制即可。',
+  },
+];
+
+const jsonLd = [faqSchema(faq)!];
+---
+
+<SectionLayout
+  title="订阅与节点管理：订阅链接的使用、更新与保护"
+  description="订阅链接是使用机场服务的核心凭证:它到底是什么、各客户端如何导入、多久更新一次、失效和无法解析时怎么处理,以及为什么它等同于账号密码、绝对不能分享给他人或贴进公开群组。"
+  path="/subscription/"
+  h1="订阅与节点管理"
+  lead="几乎一半的「连不上」都和订阅有关。理解订阅链接的工作方式,能省去大量无谓的排查时间。"
+  directAnswer="订阅链接是机场交付节点的方式,它同时也是账号凭据:任何人拿到就能直接使用你的账号。日常管理有三件事要做对——定期更新订阅以获取最新节点、按客户端选择对应格式的链接、不要在群组或工单里贴出完整链接。链接疑似泄露时在后台重置即可立即失效。"
+  extraJsonLd={jsonLd}
+>
+  <DefinitionBox
+    term="订阅链接"
+    definition="订阅链接是服务商生成的一个专属 URL,客户端访问它即可拉取当前全部可用节点的配置。节点变化时,更新订阅就能同步到最新列表。"
+    glossaryHref="/glossary/subscription-link/"
+  />
+
+  <section class="section">
+    <h2>订阅使用的基本习惯</h2>
+    <Checklist
+      items={[
+        '从服务商用户面板复制订阅,不使用他人转发的链接',
+        '客户端开启自动更新订阅,出现批量节点失效先手动更新一次',
+        '把订阅链接当作密码对待:不发群、不截图、不存公开笔记',
+        '怀疑泄露时,立即在用户面板重置订阅并在所有设备更新',
+        '记住服务商的官网和公告渠道,断连时先看公告再排查',
+      ]}
+    />
+  </section>
+
+  <section class="section">
+    <h2>订阅相关问题直达</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/troubleshooting/subscription-update-failed/">
+        <h3>订阅更新失败</h3>
+        <p>更新报错、导入失败的常见原因与处理。</p>
+      </a>
+      <a class="card" href="/troubleshooting/all-nodes-timeout/">
+        <h3>所有节点超时</h3>
+        <p>大概率是订阅过期或整体故障,按流程确认。</p>
+      </a>
+      <a class="card" href="/clients/clash-subscription-import/">
+        <h3>Clash 订阅导入</h3>
+        <p>从零完成订阅导入与基础配置。</p>
+      </a>
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/clients/">
+        <h3>客户端教程</h3>
+        <p>各客户端的订阅导入方法。</p>
+      </a>
+      <a class="card" href="/troubleshooting/">
+        <h3>故障排查</h3>
+        <p>订阅正常但仍连不上时的后续检查。</p>
+      </a>
+      <a class="card" href="/risk/">
+        <h3>风险与避坑</h3>
+        <p>订阅泄露的后果与预防。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

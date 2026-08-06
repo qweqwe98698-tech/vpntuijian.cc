@@ -1,0 +1,35 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+---
+
+<SectionLayout
+  title="隐私政策"
+  description="本站的隐私政策:不设账号系统、不收集个人信息、不加载第三方跟踪脚本,站内搜索索引在你的浏览器本地运行。说明日志范围、Cookie 使用情况与外部链接跳转后的数据归属。"
+  path="/privacy/"
+  h1="隐私政策"
+  lead="本站以静态页面提供内容,收集的信息越少越好。"
+  isCollection={false}
+>
+  <div class="prose section">
+    <h2>我们收集什么</h2>
+    <p>
+      本站是纯静态网站:没有账号系统,没有评论系统,不设 Cookie 弹窗,因为我们不使用需要征得同意的
+      Cookie。站内搜索(Pagefind)完全在你的浏览器本地运行,搜索词不会发送到任何服务器。
+    </p>
+
+    <h2>托管服务产生的数据</h2>
+    <p>
+      本站托管于 Cloudflare
+      Pages。Cloudflare 作为基础设施提供方,可能记录访问日志(IP、访问时间、请求路径)用于安全防护与故障诊断,详见
+      Cloudflare 的隐私政策。本站无法也不会将这些日志与你的身份关联。
+    </p>
+
+    <h2>外部链接</h2>
+    <p>
+      站内指向服务商官网等外部网站的链接,跳转后适用对方的隐私政策。推广链接的说明见<a href="/disclosure/">推广披露</a>。
+    </p>
+
+    <h2>政策变更</h2>
+    <p>如引入统计或其他会收集数据的功能,本页会先行更新并说明数据的用途与范围。</p>
+  </div>
+</SectionLayout>

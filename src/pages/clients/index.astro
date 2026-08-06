@@ -1,0 +1,107 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import FAQSection from '@components/FAQSection.astro';
+import ResponsiveTable from '@components/ResponsiveTable.astro';
+import { getPublished, toCard } from '@lib/content';
+import { itemListSchema, faqSchema } from '@lib/schema';
+
+const entries = await getPublished('clients');
+const cards = entries.map(toCard);
+
+const faq = [
+  {
+    q: '我应该用哪个客户端?',
+    a: '看设备和经验:Windows 新手建议从 Clash 系列图形界面入手;iPhone 和 iPad 常用 Shadowrocket;想要一套配置多端通用可以学 sing-box;v2rayN 适合需要手动管理节点的 Windows 用户。',
+  },
+  {
+    q: '客户端是免费的吗?',
+    a: '大多数主流客户端本体免费开源,iOS 平台的 Shadowrocket 是付费应用且需要非国区 Apple ID。客户端只是工具,流量和节点来自你购买的服务。',
+  },
+  {
+    q: '换机场需要重新学客户端吗?',
+    a: '不需要。客户端和服务是分离的:换服务商通常只是替换一条订阅链接,客户端的用法完全一样。这也是我们建议先学好一个客户端的原因。',
+  },
+];
+
+const jsonLd = [
+  itemListSchema(cards.map((c) => ({ name: c.title, url: c.href }))),
+  faqSchema(faq)!,
+];
+---
+
+<SectionLayout
+  title="客户端教程中心：Clash、Shadowrocket、v2rayN、sing-box 配置指南"
+  description="主流代理客户端的安装、订阅导入、模式选择和连接测试教程,覆盖 Windows、macOS、Android、iOS 平台,每篇都标注最后检查日期。"
+  path="/clients/"
+  h1="客户端教程中心"
+  lead="客户端是使用代理服务的第一道门槛。这里的教程从安装讲到订阅导入和模式选择,每一步都用文字描述清楚界面位置,照着做即可完成配置。"
+  directAnswer="客户端负责把机场提供的订阅变成实际可用的网络连接。选哪个主要看设备:Windows 常用 Clash 系与 v2rayN,macOS 有 Clash 系与 Surge,Android 有 Clash for Android、v2rayNG、Hiddify,iOS 受限于 App Store 常用 Shadowrocket、Stash、Quantumult X。协议支持范围各不相同,买订阅前要先确认兼容。"
+  extraJsonLd={jsonLd}
+>
+  <section class="section">
+    <h2>按设备选择客户端</h2>
+    <ResponsiveTable label="设备与推荐客户端对照">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">设备</th>
+            <th scope="col">常用客户端</th>
+            <th scope="col">建议</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Windows</th>
+            <td>Clash 系列、v2rayN</td>
+            <td>新手先用 Clash 图形界面,进阶再考虑 v2rayN</td>
+          </tr>
+          <tr>
+            <th scope="row">macOS</th>
+            <td>Clash 系列、sing-box</td>
+            <td>与 Windows 逻辑一致,注意授予网络扩展权限</td>
+          </tr>
+          <tr>
+            <th scope="row">Android</th>
+            <td>Clash 系列、sing-box</td>
+            <td>从官方渠道安装,注意电池优化白名单</td>
+          </tr>
+          <tr>
+            <th scope="row">iPhone / iPad</th>
+            <td>Shadowrocket、sing-box</td>
+            <td>需要非国区 Apple ID,Shadowrocket 为付费应用</td>
+          </tr>
+        </tbody>
+      </table>
+    </ResponsiveTable>
+  </section>
+
+  <section class="section">
+    <h2>全部教程</h2>
+    <div class="grid grid-2">
+      {cards.map((c) => (
+        <ArticleCard title={c.title} description={c.description} href={c.href} category={c.category} updatedAt={c.updatedAt} />
+      ))}
+    </div>
+  </section>
+
+  <FAQSection faq={faq} />
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/troubleshooting/">
+        <h3>故障排查</h3>
+        <p>配置完成后连不上?按现象逐步定位问题。</p>
+      </a>
+      <a class="card" href="/subscription/">
+        <h3>订阅管理</h3>
+        <p>订阅链接怎么来、怎么更新、怎么保护。</p>
+      </a>
+      <a class="card" href="/glossary/">
+        <h3>术语表</h3>
+        <p>教程里出现的节点、分流、TUN 模式等概念解释。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>

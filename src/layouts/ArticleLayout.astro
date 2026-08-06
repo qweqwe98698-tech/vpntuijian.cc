@@ -1,0 +1,155 @@
+---
+/**
+ * 文章详情统一布局:面包屑 + 头部 + 直接答案 + 关键结论 + 目录 + 正文
+ * + FAQ + 来源 + 作者 + 相关阅读 + 上下篇。
+ * 适用于 articles / clients / troubleshooting / protocols / scenarios / reviews / comparisons。
+ */
+import type { MarkdownHeading } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import ArticleHeader from '@components/ArticleHeader.astro';
+import DirectAnswer from '@components/DirectAnswer.astro';
+import KeyTakeaways from '@components/KeyTakeaways.astro';
+import TableOfContents from '@components/TableOfContents.astro';
+import ArticleBody from '@components/ArticleBody.astro';
+import FAQSection from '@components/FAQSection.astro';
+import SourceList from '@components/SourceList.astro';
+import AuthorCard from '@components/AuthorCard.astro';
+import ReviewerCard from '@components/ReviewerCard.astro';
+import RelatedArticles from '@components/RelatedArticles.astro';
+import PreviousNext from '@components/PreviousNext.astro';
+import UpdatedNotice from '@components/UpdatedNotice.astro';
+import DataStatusBadge from '@components/DataStatusBadge.astro';
+import AffiliateDisclosure from '@components/AffiliateDisclosure.astro';
+import {
+  relatedFor,
+  getPublished,
+  type ArticleCollection,
+} from '@lib/content';
+import { collectionBase, collectionLabels } from '@lib/site';
+import { articleSchema, breadcrumbSchema, faqSchema } from '@lib/schema';
+
+interface Props {
+  entry: CollectionEntry<ArticleCollection>;
+  headings: MarkdownHeading[];
+  /** 栏目 Hub 页(面包屑中间层),默认按集合推断 */
+  hub?: { name: string; href: string };
+  /** 是否显示推广披露(评测/对比默认显示) */
+  showDisclosure?: boolean;
+}
+
+const { entry, headings, hub, showDisclosure = false } = Astro.props;
+const d = entry.data;
+const base = collectionBase[entry.collection]!;
+const path = `${base}${entry.id}/`;
+const hubCrumb = hub ?? { name: collectionLabels[entry.collection]!, href: base };
+
+const author = await getEntry('authors', d.author);
+const reviewer = d.reviewer ? await getEntry('authors', d.reviewer) : undefined;
+const related = await relatedFor(entry);
+
+// 同集合内按发布时间排序的上一篇/下一篇
+const siblings = (await getPublished(entry.collection as ArticleCollection)).sort(
+  (a, b) => a.data.publishedAt.getTime() - b.data.publishedAt.getTime()
+);
+const idx = siblings.findIndex((e) => e.id === entry.id);
+const prevEntry = idx > 0 ? siblings[idx - 1] : undefined;
+const nextEntry = idx >= 0 && idx < siblings.length - 1 ? siblings[idx + 1] : undefined;
+const prev = prevEntry ? { title: prevEntry.data.title, href: `${base}${prevEntry.id}/` } : undefined;
+const next = nextEntry ? { title: nextEntry.data.title, href: `${base}${nextEntry.id}/` } : undefined;
+
+const crumbs = [
+  { name: '首页', href: '/' },
+  hubCrumb,
+  { name: d.title, href: path },
+];
+
+const jsonLd: Record<string, unknown>[] = [
+  articleSchema({
+    title: d.title,
+    description: d.description,
+    url: path,
+    publishedAt: d.publishedAt,
+    updatedAt: d.updatedAt,
+    authorName: author?.data.name ?? '编辑部',
+    isTech: entry.collection === 'clients' || entry.collection === 'troubleshooting' || entry.collection === 'protocols',
+  }),
+  breadcrumbSchema(crumbs),
+];
+const faqLd = faqSchema(d.faq ?? []);
+if (faqLd) jsonLd.push(faqLd);
+---
+
+<BaseLayout
+  title={`${d.title}｜VPN推荐指南`}
+  description={d.description}
+  path={path}
+  noindex={d.noindex}
+  canonical={d.canonical}
+  ogType="article"
+  publishedAt={d.publishedAt}
+  updatedAt={d.updatedAt}
+  jsonLd={jsonLd}
+>
+  <div class="container">
+    <Breadcrumbs items={crumbs} />
+    <div class="page-with-sidebar">
+      <article>
+        <ArticleHeader
+          title={d.title}
+          description={d.description}
+          authorName={author?.data.name ?? '编辑部'}
+          reviewerName={reviewer?.data.name}
+          publishedAt={d.publishedAt}
+          updatedAt={d.updatedAt}
+          reviewedAt={d.reviewedAt}
+          dataStatus={d.dataStatus}
+        />
+        {d.dataStatus === 'sample' && (
+          <div class="notice notice-warning">
+            <span class="notice-title">示例内容说明</span>
+            <p>
+              本页使用示例数据展示内容结构,不代表任何真实服务的实际情况。真实资料补充后会更新数据状态标识。
+            </p>
+          </div>
+        )}
+        {showDisclosure && <AffiliateDisclosure />}
+        <UpdatedNotice updatedAt={d.updatedAt} />
+        <DirectAnswer text={d.summary} />
+        <KeyTakeaways items={d.keyTakeaways} />
+        <ArticleBody>
+          <slot />
+        </ArticleBody>
+        <FAQSection faq={d.faq ?? []} />
+        <SourceList sources={d.sources ?? []} />
+        <PreviousNext prev={prev} next={next} />
+        <RelatedArticles items={related} />
+      </article>
+      <aside class="sidebar" aria-label="辅助信息">
+        <TableOfContents headings={headings} />
+        {author && <AuthorCard {...author.data} />}
+        {reviewer && <ReviewerCard {...reviewer.data} />}
+        <div class="sidebar-status">
+          <p class="sidebar-status-title">内容状态</p>
+          <DataStatusBadge status={d.dataStatus} />
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .sidebar-status {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-sm);
+  }
+  .sidebar-status-title {
+    font-weight: 600;
+    color: var(--color-heading);
+    margin-bottom: var(--space-2);
+  }
+</style>

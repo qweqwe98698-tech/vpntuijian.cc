@@ -1,0 +1,22 @@
+---
+/** 内容时效提示:超过一定天数未核验时显示 */
+import { formatDate } from '@lib/site';
+
+interface Props {
+  updatedAt: Date;
+  staleDays?: number;
+}
+
+const { updatedAt, staleDays = 180 } = Astro.props;
+const ageDays = Math.floor((Date.now() - updatedAt.getTime()) / 86400000);
+const isStale = ageDays > staleDays;
+---
+
+{isStale && (
+  <div class="notice notice-warning">
+    <span class="notice-title">内容时效提示</span>
+    <p>
+      本文最后更新于 {formatDate(updatedAt)}。代理服务与客户端变化较快,阅读时请注意部分细节可能已发生变化。
+    </p>
+  </div>
+)}

@@ -1,0 +1,94 @@
+---
+import SectionLayout from '@layouts/SectionLayout.astro';
+import { getCollection } from 'astro:content';
+import { itemListSchema } from '@lib/schema';
+
+const entries = (await getCollection('glossary', ({ data }) => !data.draft)).sort((a, b) =>
+  a.data.term.localeCompare(b.data.term, 'zh')
+);
+
+const byCategory = new Map<string, typeof entries>();
+for (const e of entries) {
+  const list = byCategory.get(e.data.category) ?? [];
+  list.push(e);
+  byCategory.set(e.data.category, list);
+}
+
+const jsonLd = [
+  itemListSchema(entries.map((e) => ({ name: e.data.term, url: `/glossary/${e.id}/` }))),
+];
+---
+
+<SectionLayout
+  title="术语表：机场、订阅、协议与客户端名词解释"
+  description="网络代理常用术语的定义与解释:机场、节点、订阅链接、流量倍率、IEPL、IPLC、原生 IP、TUN 模式、分流规则、Shadowsocks、Trojan、VLESS、Hysteria 2 等十八个词条。"
+  path="/glossary/"
+  h1="术语表"
+  lead="看不懂套餐页和教程里的名词?每个术语一句话定义加详细解释,全站文章首次出现术语时都会链接到这里。"
+  directAnswer="本术语表解释代理服务领域的常用名词:机场、节点、订阅链接、倍率、IEPL、IPLC、原生 IP、TUN 模式、分流规则等。每个词条给出一句话定义、使用语境和常见误解,便于在阅读教程或对比套餐时随时查证。"
+  extraJsonLd={jsonLd}
+>
+  {[...byCategory.entries()].map(([category, list]) => (
+    <section class="section">
+      <h2>{category}</h2>
+      <dl class="glossary-list">
+        {list.map((e) => (
+          <div class="glossary-item">
+            <dt>
+              <a href={`/glossary/${e.id}/`}>{e.data.term}</a>
+              {e.data.aliases.length > 0 && <span class="g-alias">{e.data.aliases.join(' / ')}</span>}
+            </dt>
+            <dd>{e.data.definition}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  ))}
+
+  <section class="section">
+    <h2>相关栏目</h2>
+    <div class="grid grid-3">
+      <a class="card" href="/protocols/">
+        <h3>线路与协议</h3>
+        <p>协议类术语的深入解读文章。</p>
+      </a>
+      <a class="card" href="/start/">
+        <h3>新手入门</h3>
+        <p>从零开始的完整入门路径。</p>
+      </a>
+      <a class="card" href="/clients/">
+        <h3>客户端教程</h3>
+        <p>把概念变成实际操作。</p>
+      </a>
+    </div>
+  </section>
+</SectionLayout>
+
+<style>
+  .glossary-list {
+    margin: 0;
+    max-width: 48rem;
+  }
+  .glossary-item {
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .glossary-item dt {
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+  .g-alias {
+    font-weight: 400;
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+  .glossary-item dd {
+    margin: 0;
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+  }
+</style>
