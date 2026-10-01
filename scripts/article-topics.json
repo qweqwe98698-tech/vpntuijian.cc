@@ -1,0 +1,82 @@
+[
+  {
+    "slug": "transit-vs-dedicated-line-jitter-analysis",
+    "title": "公网中转与IEPL内网专线深度横评：晚高峰丢包率与网络抖动技术剖析",
+    "category": "实用指南",
+    "description": "公网中转与IEPL专线的底层网络架构对比：为什么专线晚高峰不卡顿、过境丢包率为何更低，深入剖析骨干网QoS排队机制并提供实测选型参考。",
+    "focus": "专线底层技术、晚高峰过境带宽与延迟抖动",
+    "tags": ["专线架构", "IEPL", "网络抖动", "晚高峰"]
+  },
+  {
+    "slug": "streaming-4k-dedicated-network-selection",
+    "title": "4K超高清流媒体与大流量机场选型指南：解锁机制与带宽冗余测算",
+    "category": "选择指南",
+    "description": "针对每月150GB以上大流量与Netflix/YouTube 4K播放场景的选型全景：解析原生住宅IP与广播IP在流媒体分流中的判定机制与避坑要点。",
+    "focus": "大流量套餐计算、流媒体解锁机制与缓冲优化",
+    "tags": ["流媒体", "4K", "大流量", "套餐选择"]
+  },
+  {
+    "slug": "ai-workflow-cross-border-network-configuration",
+    "title": "AI生产力工作流跨国网络配置：ChatGPT与Claude高频断连规避策略",
+    "category": "实用指南",
+    "description": "针对ChatGPT Plus、Claude与API高频调用的网络配置方案：分析数据中心机房IP风控拦截机制，长连接会话保持与静态分流策略详解。",
+    "focus": "AI工具网络稳定性、IP纯净度与长会话保持",
+    "tags": ["ChatGPT", "AI工具", "长连接", "节点选择"]
+  },
+  {
+    "slug": "multi-device-cross-platform-subscription-management",
+    "title": "多设备跨平台订阅管理与防风控策略：家庭与团队共用注意事项",
+    "category": "实用指南",
+    "description": "多设备共用一条订阅时的网络冲突与防风控指南：详细说明在线设备数超限判定逻辑、不同客户端分流规则差异及多平台自签证书配置要点。",
+    "focus": "多设备并发连接、规则集同步与账号安全",
+    "tags": ["多设备", "订阅管理", "客户端兼容", "连接限制"]
+  },
+  {
+    "slug": "protocol-transport-security-benchmark",
+    "title": "现代代理传输协议深度实测：VLESS Reality、TUIC与Hysteria2对比",
+    "category": "实用指南",
+    "description": "2026年主流代理协议性能与抗丢包实测：深入分析基于UDP的QUIC拥塞调度与基于TCP的TLS伪装在弱网蜂窝网络下的吞吐差异与选择建议。",
+    "focus": "协议底层伪装、UDP拥塞算法与弱网抗丢包表现",
+    "tags": ["协议", "VLESS", "Hysteria2", "网络架构"]
+  },
+  {
+    "slug": "cross-border-remote-work-network-resilience",
+    "title": "跨境远程办公网络高可用方案：双订阅容灾与企业级路由分流配置",
+    "category": "选择指南",
+    "description": "跨国远程办公人员的高可用网络搭建指南：如何通过主备双订阅消除单点故障、配置内网穿透与外网流量智能分流，确保关键业务不断连。",
+    "focus": "网络容灾备份、双订阅热备与办公场景分流",
+    "tags": ["远程办公", "网络容灾", "双订阅", "分流规则"]
+  },
+  {
+    "slug": "budget-tier-real-cost-evaluation",
+    "title": "低价年付与主流月付套餐真实代价评估：共享带宽超售与跑路风险防范",
+    "category": "风险与避坑",
+    "description": "低预算套餐与主流月付服务的深层成本对比：解析共享带宽超售比计算方式、年付资金池运作风险，并提供合理的个人网络支出规划建议。",
+    "focus": "超售比模型、沉没成本控制与服务商信用评估",
+    "tags": ["避坑", "套餐选择", "跑路风险", "预算规划"]
+  },
+  {
+    "slug": "mobile-cellular-network-battery-optimization",
+    "title": "移动蜂窝网络下代理客户端耗电调优：后台保活与UDP心跳控制",
+    "category": "实用指南",
+    "description": "解决安卓与iOS代理客户端后台高耗电与异常断连的调优指南：详解系统电池优化机制、TCP保活心跳包间隔调整与分应用代理降耗技巧。",
+    "focus": "移动端系统省电策略、心跳包调优与后台网络权限",
+    "tags": ["安卓", "iOS", "电池优化", "连接保活"]
+  },
+  {
+    "slug": "dns-leak-webrtc-privacy-protection",
+    "title": "代理环境下的真实隐私保护：DNS污染阻断与WebRTC泄漏防护实操",
+    "category": "实用指南",
+    "description": "排查代理环境下隐私泄露的实操教程：全面解析DNS请求无意泄露原因、浏览器WebRTC公网IP暴露机制，并给出分流配置文件修复方案。",
+    "focus": "DNS分流机制、WebRTC防泄漏与客户端安全规则",
+    "tags": ["隐私保护", "DNS泄漏", "WebRTC", "安全设置"]
+  },
+  {
+    "slug": "high-concurrency-crawler-developer-node-policy",
+    "title": "开发者与数据采集场景网络代理方案：高频请求节点轮换与风控应对",
+    "category": "实用指南",
+    "description": "面向技术开发者的海外网络接入指南：高并发API调用与海外站点抓取时的节点池调度策略、速率限制规避技巧及自建与托管服务的权衡。",
+    "focus": "开发人员需求、高并发网络连接与自建方案对比",
+    "tags": ["开发者", "API调用", "节点调度", "并发连接"]
+  }
+]
