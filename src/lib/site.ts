@@ -40,7 +40,7 @@ export const footerNav: { title: string; items: NavItem[] }[] = [
       { label: '机场推荐', href: '/airport/' },
       { label: '稳定机场', href: '/stable/' },
       { label: '便宜机场', href: '/value/' },
-      { label: '科学上网工具', href: '/tools/' },
+      { label: '常用网络工具', href: '/tools/' },
     ],
   },
   {

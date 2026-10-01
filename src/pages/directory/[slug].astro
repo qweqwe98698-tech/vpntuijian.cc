@@ -6,7 +6,7 @@ import ProviderProfile from '@components/ProviderProfile.astro';
 import FAQSection from '@components/FAQSection.astro';
 import RelatedArticles from '@components/RelatedArticles.astro';
 import { resolveRelated } from '@lib/content';
-import { breadcrumbSchema, faqSchema, articleSchema } from '@lib/schema';
+import { breadcrumbSchema, articleSchema } from '@lib/schema';
 
 export async function getStaticPaths() {
   const entries = await getCollection('providers', ({ data }) => !data.draft);
@@ -45,8 +45,8 @@ if (d.speedTest) {
   );
 }
 
-const faqLd = faqSchema(d.faq ?? []);
-if (faqLd) jsonLd.push(faqLd);
+// 避免在服务档案页输出模式化 FAQPage Schema
+
 ---
 
 <BaseLayout

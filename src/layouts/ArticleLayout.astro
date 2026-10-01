@@ -29,7 +29,7 @@ import {
   type ArticleCollection,
 } from '@lib/content';
 import { collectionBase, collectionLabels } from '@lib/site';
-import { articleSchema, breadcrumbSchema, faqSchema } from '@lib/schema';
+import { articleSchema, breadcrumbSchema } from '@lib/schema';
 
 interface Props {
   entry: CollectionEntry<ArticleCollection>;
@@ -78,8 +78,9 @@ const jsonLd: Record<string, unknown>[] = [
   }),
   breadcrumbSchema(crumbs),
 ];
-const faqLd = faqSchema(d.faq ?? []);
-if (faqLd) jsonLd.push(faqLd);
+// 避免在全站大面积文章中堆砌 FAQPage Schema 触发搜索引擎结构化数据作弊(Schema Spam)惩罚
+// 正文仍完整保留 FAQSection 组件供读者浏览
+
 ---
 
 <BaseLayout

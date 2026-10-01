@@ -8,3 +8,8 @@
 # 常见别名路径
 /faq           /about/            301
 /faq/          /about/            301
+/vpn           /airport/          301
+/vpn/*         /airport/          301
+/brands        /directory/        301
+/brands/*      /directory/        301
+

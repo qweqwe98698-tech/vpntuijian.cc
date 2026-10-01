@@ -1,5 +1,14 @@
+User-agent: bingbot
+Allow: /
+Disallow: /search/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /search/
+
 User-agent: *
 Allow: /
 Disallow: /search/
 
 Sitemap: https://vpntuijian.cc/sitemap-index.xml
+
