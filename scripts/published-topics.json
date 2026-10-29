@@ -33,5 +33,10 @@
     "slug": "budget-tier-real-cost-evaluation",
     "title": "低价年付与主流月付套餐真实代价评估：共享带宽超售与跑路风险防范",
     "publishedAt": "2026-10-25"
+  },
+  {
+    "slug": "mobile-cellular-network-battery-optimization",
+    "title": "移动蜂窝网络下代理客户端耗电调优：后台保活与UDP心跳控制",
+    "publishedAt": "2026-10-29"
   }
 ]
