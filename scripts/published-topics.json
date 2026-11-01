@@ -38,5 +38,10 @@
     "slug": "mobile-cellular-network-battery-optimization",
     "title": "移动蜂窝网络下代理客户端耗电调优：后台保活与UDP心跳控制",
     "publishedAt": "2026-10-29"
+  },
+  {
+    "slug": "dns-leak-webrtc-privacy-protection",
+    "title": "代理环境下的真实隐私保护：DNS污染阻断与WebRTC泄漏防护实操",
+    "publishedAt": "2026-11-01"
   }
 ]
