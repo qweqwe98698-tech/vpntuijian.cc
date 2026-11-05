@@ -43,5 +43,10 @@
     "slug": "dns-leak-webrtc-privacy-protection",
     "title": "代理环境下的真实隐私保护：DNS污染阻断与WebRTC泄漏防护实操",
     "publishedAt": "2026-11-01"
+  },
+  {
+    "slug": "high-concurrency-crawler-developer-node-policy",
+    "title": "开发者与数据采集场景网络代理方案：高频请求节点轮换与风控应对",
+    "publishedAt": "2026-11-05"
   }
 ]
