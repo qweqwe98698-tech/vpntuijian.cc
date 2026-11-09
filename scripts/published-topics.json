@@ -48,5 +48,10 @@
     "slug": "high-concurrency-crawler-developer-node-policy",
     "title": "开发者与数据采集场景网络代理方案：高频请求节点轮换与风控应对",
     "publishedAt": "2026-11-05"
+  },
+  {
+    "slug": "transit-vs-dedicated-line-jitter-analysis",
+    "title": "公网中转与IEPL内网专线深度横评：晚高峰丢包率与网络抖动技术剖析",
+    "publishedAt": "2026-11-09"
   }
 ]
